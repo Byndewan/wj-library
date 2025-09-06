@@ -6,32 +6,54 @@ interface ExportButtonProps {
   data: LoanWithDetails[];
   filename: string;
   label: string;
+  variant?: 'primary' | 'success' | 'secondary';
 }
 
-const ExportButton: React.FC<ExportButtonProps> = ({ data, filename, label }) => {
+const ExportButton: React.FC<ExportButtonProps> = ({ 
+  data, 
+  filename, 
+  label, 
+  variant = 'success' 
+}) => {
   const handleExport = () => {
     const exportData = data.map(loan => ({
-      'Loan ID': loan.id,
-      'Book Title': loan.bookTitle,
-      'Member Name': loan.memberName,
-      'Class': loan.className,
-      'Borrow Date': loan.borrowDate.toLocaleDateString(),
-      'Due Date': loan.dueDate.toLocaleDateString(),
-      'Return Date': loan.returnDate ? loan.returnDate.toLocaleDateString() : 'Not Returned',
-      'Status': loan.status,
-      'Notes': loan.notes || ''
+      'ID Peminjaman': loan.id,
+      'Judul Buku': loan.bookTitle,
+      'Nama Anggota': loan.memberName,
+      'Kelas': loan.className,
+      'Tanggal Pinjam': loan.borrowDate.toLocaleDateString('id-ID'),
+      'Tanggal Jatuh Tempo': loan.dueDate.toLocaleDateString('id-ID'),
+      'Tanggal Kembali': loan.returnDate ? loan.returnDate.toLocaleDateString('id-ID') : 'Belum Dikembalikan',
+      'Status': loan.status === 'BORROWED' ? 'Dipinjam' : 'Dikembalikan',
+      'Keterlambatan': loan.status === 'BORROWED' && new Date() > loan.dueDate 
+        ? `${Math.ceil((new Date().getTime() - loan.dueDate.getTime()) / (1000 * 60 * 60 * 24))} hari` 
+        : 'Tidak',
+      'Catatan': loan.notes || ''
     }));
 
     exportSpreadsheet(exportData, filename);
   };
 
+  const getButtonClass = () => {
+    switch (variant) {
+      case 'primary':
+        return 'btn-primary';
+      case 'secondary':
+        return 'btn-secondary';
+      case 'success':
+      default:
+        return 'btn-success';
+    }
+  };
+
   return (
     <button
       onClick={handleExport}
-      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-200 flex items-center"
+      className={`${getButtonClass()} flex items-center space-x-2`}
+      title="Export data ke Excel"
     >
-      <span className="mr-2">📊</span>
-      {label}
+      <span>📊</span>
+      <span>{label}</span>
     </button>
   );
 };

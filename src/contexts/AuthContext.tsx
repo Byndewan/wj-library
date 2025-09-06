@@ -3,9 +3,11 @@ import {
   type User, 
   signInWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged 
+  onAuthStateChanged,
+  getIdTokenResult
 } from 'firebase/auth';
-import { auth } from '../firebase/config';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase/config';
 import type { AppUser, UserRole } from '../types';
 
 interface AuthContextType {
@@ -26,36 +28,82 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(null);
+
+  const resetInactivityTimer = () => {
+    if (inactivityTimer) {
+      clearTimeout(inactivityTimer);
+    }
+
+    const timer = setTimeout(() => {
+      if (currentUser) {
+        console.log('Session expired due to inactivity');
+        logout();
+      }
+    }, 3600000);
+
+    setInactivityTimer(timer);
+  };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const events = ['mousedown', 'keypress', 'scroll', 'touchstart'];
+    
+    const handleActivity = () => {
+      resetInactivityTimer();
+    };
+
+    events.forEach(event => {
+      document.addEventListener(event, handleActivity);
+    });
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, handleActivity);
+      });
+    };
+  }, [currentUser]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
       
       if (user) {
-        // Simulate fetching user data from Firestore
-        const fetchUserData = async () => {
-          try {
-            // In a real app, you would fetch from Firestore
-            const mockUser: AppUser = {
+        try {
+          const tokenResult = await getIdTokenResult(user);
+          const tokenExpiration = new Date(tokenResult.expirationTime);
+          
+          if (tokenExpiration < new Date()) {
+            await logout();
+            return;
+          }
+
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          
+          if (userDoc.exists()) {
+            const userData = userDoc.data() as AppUser;
+            setUserData(userData);
+          } else {
+            const fallbackUser: AppUser = {
               id: user.uid,
-              name: user.email?.split('@')[0] || 'User',
+              name: user.displayName || user.email?.split('@')[0] || 'Pengguna',
               email: user.email || '',
-              role: determineUserRole(user.email),
+              role: 'SISWA',
               isActive: true
             };
-            setUserData(mockUser);
-          } catch (error) {
-            console.error('Error fetching user data:', error);
-          } finally {
-            setLoading(false);
+            setUserData(fallbackUser);
           }
-        };
-        
-        fetchUserData();
+
+          resetInactivityTimer();
+
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+          await logout();
+        }
       } else {
         setUserData(null);
-        setLoading(false);
       }
+      
+      setLoading(false);
     });
 
     return unsubscribe;
@@ -65,7 +113,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!email) return 'SISWA';
     
     if (email.includes('admin')) return 'ADMIN';
-    if (email.includes('staff')) return 'PETUGAS';
+    if (email.includes('petugas')) return 'PETUGAS';
     return 'SISWA';
   };
 
@@ -82,22 +130,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const getAuthErrorMessage = (errorCode: string): string => {
     switch (errorCode) {
       case 'auth/invalid-email':
-        return 'Invalid email address format.';
+        return 'Format email tidak valid.';
       case 'auth/user-disabled':
-        return 'User account has been disabled.';
+        return 'Akun pengguna telah dinonaktifkan.';
       case 'auth/user-not-found':
-        return 'No user found with this email.';
+        return 'Tidak ada pengguna dengan email tersebut.';
       case 'auth/wrong-password':
-        return 'Incorrect password.';
+        return 'Password salah.';
       case 'auth/too-many-requests':
-        return 'Too many failed login attempts. Please try again later.';
+        return 'Terlalu banyak percobaan login gagal. Silakan coba lagi nanti.';
       default:
-        return 'Failed to login. Please try again.';
+        return 'Gagal login. Silakan coba lagi.';
     }
   };
 
   const logout = async (): Promise<void> => {
     try {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+      }
       await signOut(auth);
     } catch (error) {
       console.error('Logout error:', error);

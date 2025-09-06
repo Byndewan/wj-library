@@ -30,73 +30,86 @@ const LoanTable: React.FC<LoanTableProps> = ({
 
   const handleReturn = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (onReturn) {
+    if (onReturn && confirm('Apakah Anda yakin ingin mengembalikan buku ini?')) {
       await onReturn(id);
     }
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading loans...</div>;
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
   return (
     <>
-      <div className="bg-white rounded-xl shadow-md p-6">
+      <div className="card">
         <div className="overflow-x-auto">
-          <table className="min-w-full table-auto">
+          <table className="table">
             <thead>
-              <tr className="bg-gray-100 text-left text-gray-700 uppercase text-sm leading-normal">
-                <th className="py-3 px-6">Book Title</th>
-                <th className="py-3 px-6">Member Name</th>
-                <th className="py-3 px-6">Class</th>
-                <th className="py-3 px-6">Borrow Date</th>
-                <th className="py-3 px-6">Due Date</th>
-                <th className="py-3 px-6">Return Date</th>
-                <th className="py-3 px-6">Status</th>
-                {showReturnAction && <th className="py-3 px-6">Actions</th>}
+              <tr>
+                <th>Judul Buku</th>
+                <th>Nama Anggota</th>
+                <th>Kelas</th>
+                <th>Tanggal Pinjam</th>
+                <th>Tanggal Jatuh Tempo</th>
+                <th>Tanggal Kembali</th>
+                <th>Status</th>
+                {showReturnAction && <th>Aksi</th>}
               </tr>
             </thead>
-            <tbody className="text-gray-600 text-sm">
-              {loans.map((loan, index) => {
+            <tbody>
+              {loans.map((loan) => {
                 const isOverdue = loan.status === 'BORROWED' && new Date() > loan.dueDate;
+                const isDueSoon = loan.status === 'BORROWED' && 
+                  new Date(loan.dueDate.getTime() - 3 * 24 * 60 * 60 * 1000) < new Date() &&
+                  !isOverdue;
                 
                 return (
                   <tr 
                     key={loan.id} 
                     className={`
-                      ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} 
-                      hover:bg-gray-100 cursor-pointer
+                      hover:bg-blue-50 cursor-pointer
                       ${isOverdue ? 'bg-red-50 text-red-600' : ''}
+                      ${isDueSoon ? 'bg-yellow-50 text-yellow-600' : ''}
                     `}
                     onClick={() => handleViewDetails(loan)}
                   >
-                    <td className="py-3 px-6">{loan.bookTitle}</td>
-                    <td className="py-3 px-6">{loan.memberName}</td>
-                    <td className="py-3 px-6">{loan.className}</td>
-                    <td className="py-3 px-6">{loan.borrowDate.toLocaleDateString()}</td>
-                    <td className={`py-3 px-6 ${isOverdue ? 'font-bold' : ''}`}>
-                      {loan.dueDate.toLocaleDateString()}
-                      {isOverdue && ' ⚠️'}
+                    <td className="font-medium">{loan.bookTitle}</td>
+                    <td>{loan.memberName}</td>
+                    <td>{loan.className}</td>
+                    <td>{loan.borrowDate.toLocaleDateString('id-ID')}</td>
+                    <td className={`font-medium ${isOverdue ? 'text-red-600' : ''} ${isDueSoon ? 'text-yellow-600' : ''}`}>
+                      {loan.dueDate.toLocaleDateString('id-ID')}
+                      {isOverdue && ' ⚠️ Terlambat'}
+                      {isDueSoon && ' ⏳ Segera'}
                     </td>
-                    <td className="py-3 px-6">
-                      {loan.returnDate ? loan.returnDate.toLocaleDateString() : '-'}
+                    <td>
+                      {loan.returnDate ? loan.returnDate.toLocaleDateString('id-ID') : '-'}
                     </td>
-                    <td className="py-3 px-6">
+                    <td>
                       <span className={`px-2 py-1 rounded-full text-xs ${
                         loan.status === 'BORROWED' 
-                          ? 'bg-yellow-100 text-yellow-800' 
+                          ? isOverdue 
+                            ? 'bg-red-100 text-red-800' 
+                            : isDueSoon
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-blue-100 text-blue-800'
                           : 'bg-green-100 text-green-800'
                       }`}>
-                        {loan.status}
+                        {loan.status === 'BORROWED' ? 'Dipinjam' : 'Dikembalikan'}
                       </span>
                     </td>
                     {showReturnAction && loan.status === 'BORROWED' && (
-                      <td className="py-3 px-6">
+                      <td>
                         <button
                           onClick={(e) => handleReturn(loan.id, e)}
-                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs"
+                          className="btn-success text-xs py-1 px-3"
+                          title="Kembalikan buku"
                         >
-                          Return
+                          Kembalikan
                         </button>
                       </td>
                     )}
@@ -108,8 +121,10 @@ const LoanTable: React.FC<LoanTableProps> = ({
         </div>
 
         {loans.length === 0 && !loading && (
-          <div className="text-center py-8 text-gray-500">
-            No loans found.
+          <div className="text-center py-12 text-gray-500">
+            <div className="text-4xl mb-4">📖</div>
+            <p className="text-lg font-medium">Tidak ada data peminjaman</p>
+            <p className="text-sm">Belum ada transaksi peminjaman buku</p>
           </div>
         )}
       </div>

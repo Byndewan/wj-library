@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   getLoans, 
   addLoan, 
   updateLoan, 
   deleteLoan,
   getActiveLoans,
-  getOverdueLoans
+  getOverdueLoans,
+  getLoanById,
+  getLoansByMemberId,
+  getLoansByBookId
 } from '../firebase/firestore';
-import type { Loan, LoanWithDetails } from '../types';
+import type { Loan, LoanWithDetails, LoanFormData, ApiResponse } from '../types';
 import { useBooks } from './useBooks';
 import { useMembers } from './useMembers';
 
@@ -16,184 +19,220 @@ export const useLoans = () => {
   const [loansWithDetails, setLoansWithDetails] = useState<LoanWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+  const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
+
   const { books } = useBooks();
   const { members } = useMembers();
 
-  useEffect(() => {
-    fetchLoans();
+  const fetchLoans = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const loansData = await getLoans();
+      setLoans(loansData);
+    } catch (err) {
+      setError('Gagal memuat data peminjaman');
+      console.error('Error fetching loans:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const getLoan = useCallback(async (id: string) => {
+    try {
+      setLoading(true);
+      const loan = await getLoanById(id);
+      setSelectedLoan(loan);
+      return loan;
+    } catch (err) {
+      setError('Gagal mengambil data peminjaman');
+      console.error('Error getting loan:', err);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const createLoan = useCallback(async (loanData: LoanFormData): Promise<ApiResponse<string>> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const book = books.find(b => b.id === loanData.bookId);
+      if (!book || !book.isActive || (book.stock || 0) <= 0) {
+        return {
+          success: false,
+          error: 'Buku tidak tersedia untuk dipinjam'
+        };
+      }
+
+      const member = members.find(m => m.id === loanData.memberId);
+      if (!member || !member.isActive) {
+        return {
+          success: false,
+          error: 'Anggota tidak aktif'
+        };
+      }
+
+      const loanId = await addLoan({
+        ...loanData,
+        status: 'BORROWED'
+      });
+      
+      await fetchLoans();
+      
+      return {
+        success: true,
+        data: loanId,
+        message: 'Peminjaman berhasil dibuat'
+      };
+    } catch (err) {
+      const errorMsg = 'Gagal membuat peminjaman';
+      setError(errorMsg);
+      console.error('Error creating loan:', err);
+      return {
+        success: false,
+        error: errorMsg
+      };
+    } finally {
+      setLoading(false);
+    }
+  }, [books, members, fetchLoans]);
+
+  const returnLoan = useCallback(async (id: string): Promise<ApiResponse<void>> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      await updateLoan(id, {
+        status: 'RETURNED',
+        returnDate: new Date()
+      });
+      
+      await fetchLoans();
+      
+      return {
+        success: true,
+        message: 'Buku berhasil dikembalikan'
+      };
+    } catch (err) {
+      const errorMsg = 'Gagal mengembalikan buku';
+      setError(errorMsg);
+      console.error('Error returning loan:', err);
+      return {
+        success: false,
+        error: errorMsg
+      };
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchLoans]);
+
+  const removeLoan = useCallback(async (id: string): Promise<ApiResponse<void>> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      await deleteLoan(id);
+      await fetchLoans();
+      
+      return {
+        success: true,
+        message: 'Peminjaman berhasil dihapus'
+      };
+    } catch (err) {
+      const errorMsg = 'Gagal menghapus peminjaman';
+      setError(errorMsg);
+      console.error('Error deleting loan:', err);
+      return {
+        success: false,
+        error: errorMsg
+      };
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchLoans]);
+
+  const fetchActiveLoans = useCallback(async () => {
+    try {
+      setLoading(true);
+      const activeLoans = await getActiveLoans();
+      setLoans(activeLoans);
+    } catch (err) {
+      setError('Gagal memuat peminjaman aktif');
+      console.error('Error fetching active loans:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchOverdueLoans = useCallback(async () => {
+    try {
+      setLoading(true);
+      const overdueLoans = await getOverdueLoans();
+      setLoans(overdueLoans);
+    } catch (err) {
+      setError('Gagal memuat peminjaman terlambat');
+      console.error('Error fetching overdue loans:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const getMemberLoans = useCallback(async (memberId: string) => {
+    try {
+      return await getLoansByMemberId(memberId);
+    } catch (err) {
+      console.error('Error getting member loans:', err);
+      return [];
+    }
+  }, []);
+
+  const getBookLoans = useCallback(async (bookId: string) => {
+    try {
+      return await getLoansByBookId(bookId);
+    } catch (err) {
+      console.error('Error getting book loans:', err);
+      return [];
+    }
   }, []);
 
   useEffect(() => {
     if (loans.length > 0 && books.length > 0 && members.length > 0) {
-      const loansWithDetailsData = loans.map(loan => {
+      const enrichedLoans: LoanWithDetails[] = loans.map(loan => {
         const book = books.find(b => b.id === loan.bookId);
         const member = members.find(m => m.id === loan.memberId);
         
         return {
           ...loan,
-          bookTitle: book?.title || 'Unknown Book',
-          memberName: member?.name || 'Unknown Member',
-          className: member?.className || 'Unknown Class'
+          bookTitle: book?.title || 'Buku Tidak Ditemukan',
+          memberName: member?.name || 'Anggota Tidak Ditemukan',
+          className: member?.className || '-'
         };
       });
       
-      setLoansWithDetails(loansWithDetailsData);
+      setLoansWithDetails(enrichedLoans);
     }
   }, [loans, books, members]);
 
-  const fetchLoans = async () => {
-    try {
-      setLoading(true);
-      const snapshot = await getLoans();
-      
-      // Pastikan snapshot dan docs ada
-      if (!snapshot || !snapshot.docs) {
-        setLoans([]);
-        return;
-      }
-      
-      const loansData: Loan[] = snapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          ...data,
-          borrowDate: data.borrowDate?.toDate() || new Date(),
-          dueDate: data.dueDate?.toDate() || new Date(),
-          returnDate: data.returnDate?.toDate()
-        } as Loan;
-      });
-      setLoans(loansData);
-    } catch (err) {
-      setError('Failed to fetch loans');
-      console.error('Error fetching loans:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const createLoan = async (loanData: Omit<Loan, 'id'>) => {
-    try {
-      await addLoan(loanData);
-      await fetchLoans();
-      return true;
-    } catch (err) {
-      setError('Failed to create loan');
-      console.error('Error creating loan:', err);
-      return false;
-    }
-  };
-
-  const editLoan = async (id: string, loanData: Partial<Loan>) => {
-    try {
-      await updateLoan(id, loanData);
-      await fetchLoans();
-      return true;
-    } catch (err) {
-      setError('Failed to update loan');
-      console.error('Error updating loan:', err);
-      return false;
-    }
-  };
-
-  const removeLoan = async (id: string) => {
-    try {
-      await deleteLoan(id);
-      await fetchLoans();
-      return true;
-    } catch (err) {
-      setError('Failed to delete loan');
-      console.error('Error deleting loan:', err);
-      return false;
-    }
-  };
-
-  const returnLoan = async (id: string) => {
-    try {
-      await updateLoan(id, {
-        status: 'RETURNED',
-        returnDate: new Date()
-      });
-      await fetchLoans();
-      return true;
-    } catch (err) {
-      setError('Failed to return loan');
-      console.error('Error returning loan:', err);
-      return false;
-    }
-  };
-
-  const fetchActiveLoans = async () => {
-    try {
-      setLoading(true);
-      const snapshot = await getActiveLoans();
-      
-      // Pastikan snapshot dan docs ada
-      if (!snapshot || !snapshot.docs) {
-        setLoans([]);
-        return;
-      }
-      
-      const loansData: Loan[] = snapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          ...data,
-          borrowDate: data.borrowDate?.toDate() || new Date(),
-          dueDate: data.dueDate?.toDate() || new Date(),
-          returnDate: data.returnDate?.toDate()
-        } as Loan;
-      });
-      setLoans(loansData);
-    } catch (err) {
-      setError('Failed to fetch active loans');
-      console.error('Error fetching active loans:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchOverdueLoans = async () => {
-    try {
-      setLoading(true);
-      const snapshot = await getOverdueLoans();
-      
-      // Pastikan snapshot dan docs ada
-      if (!snapshot || !snapshot.docs) {
-        setLoans([]);
-        return;
-      }
-      
-      const loansData: Loan[] = snapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          ...data,
-          borrowDate: data.borrowDate?.toDate() || new Date(),
-          dueDate: data.dueDate?.toDate() || new Date(),
-          returnDate: data.returnDate?.toDate()
-        } as Loan;
-      });
-      setLoans(loansData);
-    } catch (err) {
-      setError('Failed to fetch overdue loans');
-      console.error('Error fetching overdue loans:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    fetchLoans();
+  }, [fetchLoans]);
 
   return {
     loans,
     loansWithDetails,
     loading,
     error,
+    selectedLoan,
+    getLoan,
     createLoan,
-    editLoan,
-    removeLoan,
     returnLoan,
-    refreshLoans: fetchLoans,
+    removeLoan,
     fetchActiveLoans,
-    fetchOverdueLoans
+    fetchOverdueLoans,
+    getMemberLoans,
+    getBookLoans,
+    refreshLoans: fetchLoans
   };
 };

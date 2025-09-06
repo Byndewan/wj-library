@@ -1,79 +1,27 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper functions
-    function isAuthenticated() {
-      return request.auth != null;
+    match /{document=**} {
+      allow read, write: if request.auth != null;
     }
     
-    function isAdmin() {
-      return request.auth.token.role == 'ADMIN';
-    }
-    
-    function isStaff() {
-      return request.auth.token.role == 'PETUGAS';
-    }
-    
-    function isStudent() {
-      return request.auth.token.role == 'SISWA';
-    }
-    
-    function getCurrentUserRole() {
-      return request.auth.token.role;
-    }
-    
-    function getCurrentUserId() {
-      return request.auth.uid;
-    }
-    
-    function isCurrentUser(userId) {
-      return userId == getCurrentUserId();
-    }
-    
-    function isActive(document) {
-      return document.data.isActive == true;
-    }
-    
-    // Books collection rules
-    match /books/{bookId} {
-      allow read: if isAuthenticated() && (isAdmin() || isStaff() || isStudent());
-      allow create: if isAuthenticated() && (isAdmin() || isStaff());
-      allow update: if isAuthenticated() && (isAdmin() || isStaff());
-      allow delete: if isAuthenticated() && isAdmin();
-    }
-    
-    // Members collection rules
-    match /members/{memberId} {
-      allow read: if isAuthenticated() && (isAdmin() || isStaff());
-      allow create: if isAuthenticated() && (isAdmin() || isStaff());
-      allow update: if isAuthenticated() && (isAdmin() || isStaff());
-      allow delete: if isAuthenticated() && isAdmin();
-      
-      // Students can only read their own data
-      allow read: if isAuthenticated() && isStudent() && isCurrentUser(resource.data.userId);
-    }
-    
-    // Loans collection rules
-    match /loans/{loanId} {
-      allow read: if isAuthenticated() && (isAdmin() || isStaff());
-      allow create: if isAuthenticated() && (isAdmin() || isStaff());
-      allow update: if isAuthenticated() && (isAdmin() || isStaff());
-      allow delete: if isAuthenticated() && isAdmin();
-      
-      // Students can only read their own loans
-      allow read: if isAuthenticated() && isStudent() && isCurrentUser(resource.data.memberId);
-    }
-    
-    // Users collection (if you want to store user data separately)
     match /users/{userId} {
-      allow read: if isAuthenticated() && (isAdmin() || isStaff() || isCurrentUser(userId));
-      allow write: if isAuthenticated() && (isAdmin() || isCurrentUser(userId));
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // School classes collection
-    match /classes/{classId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated() && (isAdmin() || isStaff());
+    match /books/{bookId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+    
+    match /members/{memberId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+    
+    match /loans/{loanId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
     }
   }
 }

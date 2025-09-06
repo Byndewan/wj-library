@@ -11,22 +11,33 @@ export const createUserManual = async (
   className: string = ''
 ): Promise<boolean> => {
   try {
-    // Buat user di Firebase Auth
+    if (!email || !password || !name) {
+      throw new Error('Email, password, dan nama harus diisi');
+    }
+
+    if (password.length < 6) {
+      throw new Error('Password minimal 6 karakter');
+    }
+
+    if (role === 'SISWA' && !className) {
+      throw new Error('Kelas harus diisi untuk siswa');
+    }
+
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     
-    // Update profile dengan nama
     await updateProfile(userCredential.user, {
       displayName: name
     });
 
-    // Simpan data user tambahan di Firestore
     const userDoc: AppUser = {
       id: userCredential.user.uid,
       name: name,
       email: email,
       role: role,
       className: className,
-      isActive: true
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
 
     await setDoc(doc(db, 'users', userCredential.user.uid), userDoc);
@@ -36,14 +47,74 @@ export const createUserManual = async (
   } catch (error: any) {
     console.error('Error creating user:', error);
     
-    if (error.code === 'auth/email-already-in-use') {
-      alert('Email sudah terdaftar. Silakan gunakan email lain.');
-    } else if (error.code === 'auth/weak-password') {
-      alert('Password terlalu lemah. Minimal 6 karakter.');
-    } else {
-      alert('Terjadi kesalahan saat membuat akun: ' + error.message);
+    let errorMessage = 'Terjadi kesalahan saat membuat akun';
+    
+    switch (error.code) {
+      case 'auth/email-already-in-use':
+        errorMessage = 'Email sudah terdaftar. Silakan gunakan email lain.';
+        break;
+      case 'auth/weak-password':
+        errorMessage = 'Password terlalu lemah. Minimal 6 karakter.';
+        break;
+      case 'auth/invalid-email':
+        errorMessage = 'Format email tidak valid.';
+        break;
+      case 'auth/operation-not-allowed':
+        errorMessage = 'Operasi tidak diizinkan. Hubungi administrator.';
+        break;
+      default:
+        errorMessage = error.message || 'Terjadi kesalahan tidak diketahui';
     }
     
-    return false;
+    throw new Error(errorMessage);
+  }
+};
+
+export const generateUsernameFromEmail = (email: string): string => {
+  return email.split('@')[0];
+};
+
+export const validatePasswordStrength = (password: string): { valid: boolean; message: string } => {
+  if (password.length < 6) {
+    return { valid: false, message: 'Password minimal 6 karakter' };
+  }
+  
+  if (!/(?=.*[a-z])/.test(password)) {
+    return { valid: false, message: 'Password harus mengandung huruf kecil' };
+  }
+  
+  if (!/(?=.*[A-Z])/.test(password)) {
+    return { valid: false, message: 'Password harus mengandung huruf besar' };
+  }
+  
+  if (!/(?=.*\d)/.test(password)) {
+    return { valid: false, message: 'Password harus mengandung angka' };
+  }
+  
+  return { valid: true, message: 'Password kuat' };
+};
+
+export const formatName = (name: string): string => {
+  return name
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
+export const validateEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+export const getRoleDisplayName = (role: UserRole): string => {
+  switch (role) {
+    case 'ADMIN':
+      return 'Administrator';
+    case 'PETUGAS':
+      return 'Petugas Perpustakaan';
+    case 'SISWA':
+      return 'Siswa';
+    default:
+      return 'Pengguna';
   }
 };

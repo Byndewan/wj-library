@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
@@ -10,15 +10,13 @@ import Loans from './pages/Loans';
 import Reports from './pages/Reports';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import './App.css';
+import './index.css';
 
-// Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { currentUser } = useAuth();
   return currentUser ? <>{children}</> : <Navigate to="/login" />;
 };
 
-// Public Route Component (redirect if already logged in)
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { currentUser } = useAuth();
   return !currentUser ? <>{children}</> : <Navigate to="/" />;
@@ -26,6 +24,7 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 function AppContent() {
   const { currentUser } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   if (!currentUser) {
     return (
@@ -46,11 +45,11 @@ function AppContent() {
   }
 
   return (
-    <div className="flex h-screen">
-      <Sidebar />
-      <div className="flex-1 ml-64">
-        <Navbar />
-        <main className="p-6 pt-20">
+    <div className="flex h-screen bg-gray-50">
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="flex-1 lg:ml-64">
+        <Navbar onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
+        <main className="p-4 lg:p-6 pt-16 lg:pt-20 min-h-screen">
           <Routes>
             <Route path="/" element={
               <ProtectedRoute>

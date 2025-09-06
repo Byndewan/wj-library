@@ -7,8 +7,8 @@ import { useMembers } from '../hooks/useMembers';
 
 const Loans: React.FC = () => {
   const { loansWithDetails, loading, error, createLoan, returnLoan } = useLoans();
-  const { books } = useBooks();
-  const { members } = useMembers();
+  const { books, loading: booksLoading } = useBooks();
+  const { members, loading: membersLoading } = useMembers();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -22,28 +22,61 @@ const Loans: React.FC = () => {
 
   if (error) {
     return (
-      <div className="p-6 bg-red-100 text-red-700 rounded-md">
-        Error: {error}
+      <div className="p-6 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+        <div className="flex items-center">
+          <span className="text-xl mr-2">⚠️</span>
+          <div>
+            <h3 className="font-semibold">Error</h3>
+            <p>{error}</p>
+          </div>
+        </div>
       </div>
     );
   }
 
+  const isLoading = loading || booksLoading || membersLoading;
+
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Loan Management</h1>
+    <div className="p-4 lg:p-6 space-y-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Manajemen Peminjaman</h1>
+          <p className="text-gray-600">Kelola transaksi peminjaman buku</p>
+        </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-200"
+          className="btn-primary whitespace-nowrap"
+          disabled={isLoading}
         >
-          New Loan
+          + Peminjaman Baru
         </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <h3 className="text-lg font-semibold text-blue-800">Total Peminjaman</h3>
+          <p className="text-2xl font-bold">{loansWithDetails.length}</p>
+        </div>
+        <div className="bg-yellow-50 p-4 rounded-lg">
+          <h3 className="text-lg font-semibold text-yellow-800">Sedang Dipinjam</h3>
+          <p className="text-2xl font-bold">
+            {loansWithDetails.filter(loan => loan.status === 'BORROWED').length}
+          </p>
+        </div>
+        <div className="bg-red-50 p-4 rounded-lg">
+          <h3 className="text-lg font-semibold text-red-800">Terlambat</h3>
+          <p className="text-2xl font-bold">
+            {loansWithDetails.filter(loan => 
+              loan.status === 'BORROWED' && new Date() > loan.dueDate
+            ).length}
+          </p>
+        </div>
       </div>
 
       <LoanTable
         loans={loansWithDetails}
         onReturn={handleReturnLoan}
-        loading={loading}
+        loading={isLoading}
       />
 
       <LoanFormModal

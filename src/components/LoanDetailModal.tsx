@@ -11,81 +11,128 @@ const LoanDetailModal: React.FC<LoanDetailModalProps> = ({ isOpen, onClose, loan
   if (!isOpen || !loan) return null;
 
   const isOverdue = loan.status === 'BORROWED' && new Date() > loan.dueDate;
+  const isDueSoon = loan.status === 'BORROWED' && 
+    new Date(loan.dueDate.getTime() - 3 * 24 * 60 * 60 * 1000) < new Date() &&
+    !isOverdue;
+
+  const getStatusColor = () => {
+    if (loan.status === 'RETURNED') return 'text-green-600 bg-green-100';
+    if (isOverdue) return 'text-red-600 bg-red-100';
+    if (isDueSoon) return 'text-yellow-600 bg-yellow-100';
+    return 'text-blue-600 bg-blue-100';
+  };
+
+  const getStatusText = () => {
+    if (loan.status === 'RETURNED') return 'Telah Dikembalikan';
+    if (isOverdue) return 'Terlambat';
+    if (isDueSoon) return 'Segera Jatuh Tempo';
+    return 'Sedang Dipinjam';
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold">Loan Details</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Detail Peminjaman</h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-500 hover:text-gray-700 text-2xl"
             >
-              ✕
+              &times;
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-lg font-medium mb-3">Book Information</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* Informasi Buku */}
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h3 className="text-lg font-medium text-blue-800 mb-3">Informasi Buku</h3>
               <div className="space-y-2">
-                <p><span className="font-semibold">Title:</span> {loan.bookTitle}</p>
-                <p><span className="font-semibold">Book ID:</span> {loan.bookId}</p>
+                <div>
+                  <span className="font-semibold text-blue-700">Judul:</span>
+                  <p className="text-blue-900">{loan.bookTitle}</p>
+                </div>
+                <div>
+                  <span className="font-semibold text-blue-700">ID Buku:</span>
+                  <p className="text-blue-900 font-mono">{loan.bookId}</p>
+                </div>
               </div>
             </div>
 
-            <div>
-              <h3 className="text-lg font-medium mb-3">Member Information</h3>
+            {/* Informasi Anggota */}
+            <div className="bg-green-50 p-4 rounded-lg">
+              <h3 className="text-lg font-medium text-green-800 mb-3">Informasi Anggota</h3>
               <div className="space-y-2">
-                <p><span className="font-semibold">Name:</span> {loan.memberName}</p>
-                <p><span className="font-semibold">Class:</span> {loan.className}</p>
-                <p><span className="font-semibold">Member ID:</span> {loan.memberId}</p>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium mb-3">Loan Dates</h3>
-              <div className="space-y-2">
-                <p><span className="font-semibold">Borrow Date:</span> {loan.borrowDate.toLocaleDateString()}</p>
-                <p><span className="font-semibold">Due Date:</span> 
-                  <span className={isOverdue ? 'text-red-600 font-bold ml-2' : ''}>
-                    {loan.dueDate.toLocaleDateString()}
-                    {isOverdue && ' (Overdue)'}
-                  </span>
-                </p>
-                {loan.returnDate && (
-                  <p><span className="font-semibold">Return Date:</span> {loan.returnDate.toLocaleDateString()}</p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium mb-3">Status</h3>
-              <div className="space-y-2">
-                <p>
-                  <span className="font-semibold">Status:</span>
-                  <span className={`ml-2 px-2 py-1 rounded-full text-xs ${
-                    loan.status === 'BORROWED' 
-                      ? 'bg-yellow-100 text-yellow-800' 
-                      : 'bg-green-100 text-green-800'
-                  }`}>
-                    {loan.status}
-                  </span>
-                </p>
-                {loan.notes && (
-                  <p><span className="font-semibold">Notes:</span> {loan.notes}</p>
-                )}
+                <div>
+                  <span className="font-semibold text-green-700">Nama:</span>
+                  <p className="text-green-900">{loan.memberName}</p>
+                </div>
+                <div>
+                  <span className="font-semibold text-green-700">Kelas:</span>
+                  <p className="text-green-900">{loan.className}</p>
+                </div>
+                <div>
+                  <span className="font-semibold text-green-700">ID Anggota:</span>
+                  <p className="text-green-900 font-mono">{loan.memberId}</p>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 flex justify-end">
+          {/* Informasi Peminjaman */}
+          <div className="bg-gray-50 p-4 rounded-lg mb-6">
+            <h3 className="text-lg font-medium text-gray-800 mb-3">Informasi Peminjaman</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <span className="font-semibold text-gray-700">Tanggal Pinjam:</span>
+                <p className="text-gray-900">{loan.borrowDate.toLocaleDateString('id-ID')}</p>
+              </div>
+              <div>
+                <span className="font-semibold text-gray-700">Tanggal Jatuh Tempo:</span>
+                <p className={`text-gray-900 ${isOverdue ? 'text-red-600 font-bold' : ''} ${isDueSoon ? 'text-yellow-600' : ''}`}>
+                  {loan.dueDate.toLocaleDateString('id-ID')}
+                  {isOverdue && ' (Terlambat)'}
+                  {isDueSoon && ' (Segera)'}
+                </p>
+              </div>
+              <div>
+                <span className="font-semibold text-gray-700">Tanggal Kembali:</span>
+                <p className="text-gray-900">
+                  {loan.returnDate ? loan.returnDate.toLocaleDateString('id-ID') : 'Belum Dikembalikan'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Status */}
+          <div className="bg-purple-50 p-4 rounded-lg mb-6">
+            <h3 className="text-lg font-medium text-purple-800 mb-3">Status</h3>
+            <div className="flex items-center space-x-4">
+              <span className={`px-3 py-2 rounded-full text-sm font-medium ${getStatusColor()}`}>
+                {getStatusText()}
+              </span>
+              {isOverdue && (
+                <span className="text-red-600 text-sm">
+                  ⚠️ Terlambat {(Math.ceil((new Date().getTime() - loan.dueDate.getTime()) / (1000 * 60 * 60 * 24)))} hari
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Catatan */}
+          {loan.notes && (
+            <div className="bg-yellow-50 p-4 rounded-lg mb-6">
+              <h3 className="text-lg font-medium text-yellow-800 mb-3">Catatan</h3>
+              <p className="text-yellow-900">{loan.notes}</p>
+            </div>
+          )}
+
+          <div className="flex justify-end space-x-3">
             <button
               onClick={onClose}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-200"
+              className="btn-secondary"
             >
-              Close
+              Tutup
             </button>
           </div>
         </div>
