@@ -184,7 +184,7 @@ body {
   }
   
   .form-input {
-    @apply bg-gray-800 border-gray-600 text-white;
+    @apply bg-white border-gray-500 text-gray-600;
   }
   
   .form-label {

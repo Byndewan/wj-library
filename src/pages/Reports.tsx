@@ -61,7 +61,7 @@ const Reports: React.FC = () => {
             </div>
             <div>
               <h3 className="text-sm font-semibold text-blue-800">Total</h3>
-              <p className="text-2xl font-bold">{loansWithDetails.length}</p>
+              <p className="text-2xl font-bold text-gray-600">{loansWithDetails.length}</p>
               <p className="text-xs text-blue-600">Semua Peminjaman</p>
             </div>
           </div>
@@ -73,7 +73,7 @@ const Reports: React.FC = () => {
             </div>
             <div>
               <h3 className="text-sm font-semibold text-green-800">Selesai</h3>
-              <p className="text-2xl font-bold">
+              <p className="text-2xl font-bold text-gray-600">
                 {loansWithDetails.filter(loan => loan.status === 'RETURNED').length}
               </p>
               <p className="text-xs text-green-600">Telah Dikembalikan</p>
@@ -87,7 +87,7 @@ const Reports: React.FC = () => {
             </div>
             <div>
               <h3 className="text-sm font-semibold text-yellow-800">Aktif</h3>
-              <p className="text-2xl font-bold">{activeLoans.length}</p>
+              <p className="text-2xl font-bold text-gray-600">{activeLoans.length}</p>
               <p className="text-xs text-yellow-600">Sedang Dipinjam</p>
             </div>
           </div>
@@ -99,7 +99,7 @@ const Reports: React.FC = () => {
             </div>
             <div>
               <h3 className="text-sm font-semibold text-red-800">Terlambat</h3>
-              <p className="text-2xl font-bold">{overdueLoans.length}</p>
+              <p className="text-2xl font-bold text-gray-600">{overdueLoans.length}</p>
               <p className="text-xs text-red-600">Melewati Jatuh Tempo</p>
             </div>
           </div>

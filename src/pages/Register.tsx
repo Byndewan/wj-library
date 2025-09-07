@@ -100,11 +100,11 @@ const Register: React.FC = () => {
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="name" className="form-label">
+                <label htmlFor="name" className="form-label relative">
+                  <FiUser className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   Nama Lengkap *
                 </label>
-                <div className="relative">
-                  <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                {/* <div className="relative"> */}
                   <input
                     id="name"
                     name="name"
@@ -115,15 +115,15 @@ const Register: React.FC = () => {
                     value={formData.name}
                     onChange={handleChange}
                   />
-                </div>
+                {/* </div> */}
               </div>
 
               <div>
-                <label htmlFor="email" className="form-label">
+                <label htmlFor="email" className="form-label relative">
+                  <FiMail className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   Email *
                 </label>
-                <div className="relative">
-                  <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                {/* <div className="relative"> */}
                   <input
                     id="email"
                     name="email"
@@ -134,7 +134,7 @@ const Register: React.FC = () => {
                     value={formData.email}
                     onChange={handleChange}
                   />
-                </div>
+                {/* </div> */}
               </div>
 
               <div>
@@ -174,11 +174,11 @@ const Register: React.FC = () => {
               )}
 
               <div>
-                <label htmlFor="password" className="form-label">
+                <label htmlFor="password" className="form-label relative">
+                  <FiLock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   Password *
                 </label>
                 <div className="relative">
-                  <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <input
                     id="password"
                     name="password"
@@ -200,11 +200,11 @@ const Register: React.FC = () => {
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="form-label">
+                <label htmlFor="confirmPassword" className="form-label relative">
+                  <FiLock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   Konfirmasi Password *
                 </label>
                 <div className="relative">
-                  <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <input
                     id="confirmPassword"
                     name="confirmPassword"

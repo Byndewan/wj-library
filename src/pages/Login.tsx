@@ -72,11 +72,11 @@ const Login: React.FC = () => {
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="email" className="form-label">
+                <label htmlFor="email" className="form-label relative">
+                  <FiMail className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   Alamat Email
                 </label>
-                <div className="relative">
-                  <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                {/* <div className="relative"> */}
                   <input
                     id="email"
                     name="email"
@@ -88,15 +88,15 @@ const Login: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
-                </div>
+                {/* </div> */}
               </div>
               
               <div>
-                <label htmlFor="password" className="form-label">
+                <label htmlFor="password" className="form-label relative">
+                  <FiLock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   Kata Sandi
                 </label>
                 <div className="relative">
-                  <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <input
                     id="password"
                     name="password"
