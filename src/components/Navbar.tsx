@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { 
+  FiMenu, 
+  FiX, 
+  FiBell, 
+  FiLogOut, 
+  FiClock,
+  FiCalendar
+} from 'react-icons/fi';
 
 const Navbar: React.FC = () => {
   const { userData, logout } = useAuth();
@@ -57,36 +65,27 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <nav className="bg-white shadow-sm border-b border-gray-200 py-3 px-6 flex justify-between items-center fixed top-0 right-0 left-0 lg:left-64 z-40">
+      <nav className="bg-white shadow-sm border-b border-gray-200 py-3 px-4 md:px-6 flex justify-between items-center fixed top-0 right-0 left-0 lg:left-64 z-40">
         {/* Mobile menu button */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="Toggle menu"
         >
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            {isMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
+          {isMenuOpen ? <FiX className="h-5 w-5" /> : <FiMenu className="h-5 w-5" />}
         </button>
 
         <div className="hidden lg:flex flex-col">
-          <h1 className="text-xl font-bold text-blue-600">Sistem Manajemen Perpustakaan</h1>
-          <div className="text-sm text-gray-600">
-            {formatDate(currentTime)} | {formatTime(currentTime)}
+          {/* <h1 className="text-lg font-semibold text-gray-900">Sistem Manajemen Perpustakaan</h1> */}
+          <div className="flex items-center text-md text-gray-600 mt-0.5">
+            <FiCalendar className="mr-1.5 h-3.5 w-3.5" />
+            <span className="mr-3">{formatDate(currentTime)}</span>
+            <FiClock className="mr-1.5 h-3.5 w-3.5" />
+            <span>{formatTime(currentTime)}</span>
           </div>
         </div>
         
-        <div className="flex items-center space-x-4">
-          {/* Notification bell */}
-          <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition duration-200">
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-          </button>
-
+        <div className="flex items-center space-x-3">
           {/* User profile */}
           <div className="flex items-center space-x-3">
             <div className="text-right hidden md:block">
@@ -97,22 +96,21 @@ const Navbar: React.FC = () => {
               </span>
             </div>
             <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
+              <div className="w-9 h-9 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm">
                 {userData?.name?.charAt(0).toUpperCase()}
               </div>
             </div>
             
-            {/* Logout dropdown */}
+            {/* Logout button */}
             <div className="relative">
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition duration-200 shadow-md hover:shadow-lg"
+                className="flex items-center space-x-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-lg transition duration-200"
                 title="Keluar"
+                aria-label="Logout"
               >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                <span className="hidden md:block">Keluar</span>
+                <FiLogOut className="h-4 w-4" />
+                <span className="hidden md:block text-sm">Keluar</span>
               </button>
             </div>
           </div>

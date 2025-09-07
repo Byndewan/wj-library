@@ -4,6 +4,7 @@ import LoanFormModal from '../components/LoanFormModal';
 import { useLoans } from '../hooks/useLoans';
 import { useBooks } from '../hooks/useBooks';
 import { useMembers } from '../hooks/useMembers';
+import { FiPlus } from 'react-icons/fi';
 
 const Loans: React.FC = () => {
   const { loansWithDetails, loading, error, createLoan, returnLoan } = useLoans();
@@ -48,7 +49,8 @@ const Loans: React.FC = () => {
           className="btn-primary whitespace-nowrap"
           disabled={isLoading}
         >
-          + Peminjaman Baru
+          <FiPlus className="h-4 w-4" />
+          Peminjaman Baru
         </button>
       </div>
 

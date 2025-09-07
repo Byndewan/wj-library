@@ -1,6 +1,7 @@
 import React from 'react';
 import { exportSpreadsheet } from '../utils/exportSpreadsheet';
 import type { LoanWithDetails } from '../types';
+import { FiDownload } from 'react-icons/fi';
 
 interface ExportButtonProps {
   data: LoanWithDetails[];
@@ -52,7 +53,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({
       className={`${getButtonClass()} flex items-center space-x-2`}
       title="Export data ke Excel"
     >
-      <span>📊</span>
+      <FiDownload className="h-4 w-4" />
       <span>{label}</span>
     </button>
   );

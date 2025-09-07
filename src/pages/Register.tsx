@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createUserManual } from '../utils/createUserManual';
 import type { UserRole } from '../types';
+import { FiBook, FiUser, FiMail, FiLock, FiAlertCircle, FiEye, FiEyeOff } from 'react-icons/fi';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,8 @@ const Register: React.FC = () => {
     role: 'SISWA' as UserRole,
     className: ''
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
@@ -70,14 +73,14 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        <div className="bg-white rounded-2xl shadow-xl p-8 animate-fadeIn">
+        <div className="bg-white rounded-xl shadow-sm p-8 animate-fadeIn border border-gray-200">
           <div className="text-center">
-            <div className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-              <span className="text-white text-2xl font-bold">📚</span>
+            <div className="mx-auto h-16 w-16 bg-blue-600 rounded-full flex items-center justify-center shadow-md">
+              <FiBook className="text-white text-2xl" />
             </div>
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            <h2 className="mt-6 text-2xl font-bold text-gray-900">
               Daftar Akun
             </h2>
             <p className="mt-2 text-sm text-gray-600">
@@ -89,9 +92,7 @@ const Register: React.FC = () => {
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
                 <div className="flex items-center">
-                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                  <FiAlertCircle className="h-5 w-5 mr-2" />
                   {error}
                 </div>
               </div>
@@ -102,32 +103,38 @@ const Register: React.FC = () => {
                 <label htmlFor="name" className="form-label">
                   Nama Lengkap *
                 </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  className="form-input"
-                  placeholder="Masukkan nama lengkap"
-                  value={formData.name}
-                  onChange={handleChange}
-                />
+                <div className="relative">
+                  <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    required
+                    className="form-input pl-10"
+                    placeholder="Masukkan nama lengkap"
+                    value={formData.name}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
 
               <div>
                 <label htmlFor="email" className="form-label">
                   Email *
                 </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  className="form-input"
-                  placeholder="email@contoh.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
+                <div className="relative">
+                  <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    className="form-input pl-10"
+                    placeholder="email@contoh.com"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
 
               <div>
@@ -170,32 +177,52 @@ const Register: React.FC = () => {
                 <label htmlFor="password" className="form-label">
                   Password *
                 </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  className="form-input"
-                  placeholder="Minimal 6 karakter"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
+                <div className="relative">
+                  <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    className="form-input pl-10 pr-10"
+                    placeholder="Minimal 6 karakter"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <FiEyeOff className="h-5 w-5" /> : <FiEye className="h-5 w-5" />}
+                  </button>
+                </div>
               </div>
 
               <div>
                 <label htmlFor="confirmPassword" className="form-label">
                   Konfirmasi Password *
                 </label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  className="form-input"
-                  placeholder="Ulangi password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                />
+                <div className="relative">
+                  <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    required
+                    className="form-input pl-10 pr-10"
+                    placeholder="Ulangi password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <FiEyeOff className="h-5 w-5" /> : <FiEye className="h-5 w-5" />}
+                  </button>
+                </div>
               </div>
             </div>
 

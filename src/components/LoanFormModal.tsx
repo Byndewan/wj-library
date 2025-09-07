@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Book, Member, Loan } from '../types';
+import { FiX } from 'react-icons/fi';
 
 interface LoanFormModalProps {
   isOpen: boolean;
@@ -136,10 +137,10 @@ const LoanFormModal: React.FC<LoanFormModalProps> = ({
             <h2 className="text-xl font-semibold text-gray-900">Peminjaman Baru</h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 text-2xl"
+              className="text-gray-500 hover:text-gray-700 p-1 rounded-md hover:bg-gray-100"
               disabled={loading}
             >
-              &times;
+              <FiX className="h-5 w-5" />
             </button>
           </div>
 
@@ -249,7 +250,7 @@ const LoanFormModal: React.FC<LoanFormModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="btn-secondary"
+                className="btn-outline"
                 disabled={loading}
               >
                 Batal
