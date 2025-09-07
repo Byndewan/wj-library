@@ -1,6 +1,7 @@
 import React from 'react';
 import MemberTable from '../components/MemberTable';
 import { useMembers } from '../hooks/useMembers';
+import type { Member } from '../types';
 
 const Members: React.FC = () => {
   const { members, loading, error, createMember, editMember, removeMember } = useMembers();
@@ -43,6 +44,7 @@ const Members: React.FC = () => {
 
       <MemberTable
         members={members}
+        onCreate={handleCreateMember}
         onEdit={handleEditMember}
         onDelete={handleDeleteMember}
         loading={loading}

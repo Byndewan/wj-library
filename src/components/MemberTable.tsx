@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import type { Member } from '../types';
 import MemberFormModal from './MemberFormModal';
 
-interface MemberTableProps {
-  members: Member[];
-  onEdit: (id: string, member: Partial<Member>) => Promise<boolean>;
-  onDelete: (id: string) => Promise<boolean>;
-  loading: boolean;
-}
+  interface MemberTableProps {
+    members: Member[];
+    onCreate: (member: Partial<Member>) => Promise<boolean>;
+    onEdit: (id: string, member: Partial<Member>) => Promise<boolean>;
+    onDelete: (id: string) => Promise<boolean>;
+    loading: boolean;
+  }
 
-const MemberTable: React.FC<MemberTableProps> = ({ members, onEdit, onDelete, loading }) => {
+const MemberTable: React.FC<MemberTableProps> = ({ members, onEdit, onCreate,onDelete, loading }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [editingMember, setEditingMember] = useState<Member | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,7 +39,7 @@ const MemberTable: React.FC<MemberTableProps> = ({ members, onEdit, onDelete, lo
         handleCloseModal();
       }
     } else {
-      const success = await onEdit('', memberData);
+      const success = await onCreate(memberData);
       if (success) {
         handleCloseModal();
       }

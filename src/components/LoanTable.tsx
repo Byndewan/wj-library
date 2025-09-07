@@ -30,7 +30,7 @@ const LoanTable: React.FC<LoanTableProps> = ({
 
   const handleReturn = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (onReturn && confirm('Apakah Anda yakin ingin mengembalikan buku ini?')) {
+    if (onReturn && confirm('Apakah buku ini sudah di kembalikan?')) {
       await onReturn(id);
     }
   };
