@@ -28,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className={`hidden lg:flex lg:flex-col w-64 bg-white text-gray-800 h-screen fixed left-0 top-0 pt-16 z-30 transition-all duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} border-r border-gray-200`}>
+      <div className="hidden lg:flex lg:flex-col w-64 bg-white text-gray-800 h-screen fixed left-0 top-0 pt-16 z-30 border-r border-gray-200">
         <div className="p-4">
           <div className="text-center mb-8 mt-4">
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -75,7 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       </div>
 
       {/* Mobile Sidebar */}
-      <div className={`lg:hidden fixed top-0 left-0 h-full w-64 bg-white text-gray-800 z-40 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} border-r border-gray-200`}>
+      <div className={`lg:hidden fixed top-0 left-0 h-full w-64 bg-white text-gray-800 z-40 transform transition-transform duration-500 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} border-r border-gray-200`}>
         <div className="p-4 pt-16">
           <button
             onClick={onClose}

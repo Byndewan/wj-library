@@ -28,21 +28,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(null);
+  const [inactivityTimer, setInactivityTimer] = useState<number | null>(null);
 
   const resetInactivityTimer = () => {
     if (inactivityTimer) {
       clearTimeout(inactivityTimer);
     }
-
-    const timer = setTimeout(() => {
+    const timer = window.setTimeout(() => {
       if (currentUser) {
         console.log('Session expired due to inactivity');
         logout();
       }
     }, 3600000);
-
     setInactivityTimer(timer);
+    return timer;
   };
 
   useEffect(() => {
@@ -94,7 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
 
           resetInactivityTimer();
-
+          console.log(resetInactivityTimer());
         } catch (error) {
           console.error('Error fetching user data:', error);
           await logout();

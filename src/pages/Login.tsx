@@ -152,14 +152,14 @@ const Login: React.FC = () => {
               </button>
             </div>
 
-            <div className="text-center pt-4 border-t border-gray-200">
+            {/* <div className="text-center pt-4 border-t border-gray-200">
               <p className="text-sm text-gray-600">
                 Belum punya akun?{' '}
                 <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
                   Daftar di sini
                 </Link>
               </p>
-            </div>
+            </div> */}
           </form>
         </div>
 

@@ -10,7 +10,11 @@ import {
   FiCalendar
 } from 'react-icons/fi';
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  onToggleSidebar: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const { userData, logout } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -68,7 +72,7 @@ const Navbar: React.FC = () => {
       <nav className="bg-white shadow-sm border-b border-gray-200 py-3 px-4 md:px-6 flex justify-between items-center fixed top-0 right-0 left-0 lg:left-64 z-40">
         {/* Mobile menu button */}
         <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          onClick={onToggleSidebar}
           className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label="Toggle menu"
         >

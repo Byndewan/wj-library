@@ -7,19 +7,17 @@ import {
   FiBook,
   FiUsers,
   FiRepeat,
-  FiBox,
-  FiHome,
   FiBookOpen,
   FiUser,
   FiRefreshCw,
   FiBarChart2,
   FiCheckCircle,
-  FiAlertTriangle,
   FiShield,
-  FiDatabase
+  FiDatabase,
 } from 'react-icons/fi';
 import MonthlyStats from '../components/MonthlyStats';
 import PopularBooks from '../components/PopularBooks';
+import { CgSearchLoading } from 'react-icons/cg';
 
 const Dashboard: React.FC = () => {
   const { books, loading: booksLoading } = useBooks();
@@ -62,11 +60,11 @@ const Dashboard: React.FC = () => {
       description: `${overdueLoans.length} terlambat`
     },
     {
-      title: 'Koleksi',
-      value: books.reduce((acc, book) => acc + (book.stock || 0), 0),
-      icon: FiBox,
-      color: 'purple',
-      description: 'Total eksemplar'
+      title: 'Comming Soon',
+      value: "",
+      icon: CgSearchLoading,
+      color: 'red',
+      description: 'Masih Dalam Tahap Pengembangan'
     }
   ];
 

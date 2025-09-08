@@ -104,7 +104,6 @@ const BookFormModal: React.FC<BookFormModalProps> = ({
       [name]: type === 'number' ? (value === '' ? undefined : parseInt(value)) : value
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -117,7 +116,7 @@ const BookFormModal: React.FC<BookFormModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
