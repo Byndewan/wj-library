@@ -19,9 +19,10 @@ const ExportButton: React.FC<ExportButtonProps> = ({
   const handleExport = () => {
     const exportData = data.map(loan => ({
       'ID Peminjaman': loan.id,
-      'Judul Buku': loan.bookTitle,
+      'Judul Buku': loan.bookTitles,
       'Nama Anggota': loan.memberName,
       'Kelas': loan.className,
+      'Alamat': loan.address || '',
       'Tanggal Pinjam': loan.borrowDate.toLocaleDateString('id-ID'),
       'Tanggal Jatuh Tempo': loan.dueDate.toLocaleDateString('id-ID'),
       'Tanggal Kembali': loan.returnDate ? loan.returnDate.toLocaleDateString('id-ID') : 'Belum Dikembalikan',

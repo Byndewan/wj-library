@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Book, Member, Loan } from '../types';
-import { FiX } from 'react-icons/fi';
+import { FiX, FiUser, FiUserPlus, FiBook, FiPlus, FiTrash2 } from 'react-icons/fi';
 
 interface LoanFormModalProps {
   isOpen: boolean;
@@ -18,25 +18,36 @@ const LoanFormModal: React.FC<LoanFormModalProps> = ({
   members
 }) => {
   const [formData, setFormData] = useState<Partial<Loan>>({
-    bookId: '',
+    bookIds: [],
     memberId: '',
+    nonMemberName: '',
+    nonMemberPhone: '',
+    nonMemberClass: '',
+    // address: '',
     borrowDate: new Date(),
-    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     status: 'BORROWED',
-    notes: ''
+    notes: '',
+    isMemberLoan: true
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [selectedBookId, setSelectedBookId] = useState('');
 
   useEffect(() => {
     if (!isOpen) {
       setFormData({
-        bookId: '',
+        bookIds: [],
         memberId: '',
+        nonMemberName: '',
+        nonMemberPhone: '',
+        nonMemberClass: '',
+        // address: '',
         borrowDate: new Date(),
         dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         status: 'BORROWED',
-        notes: ''
+        notes: '',
+        isMemberLoan: false
       });
       setErrors({});
     }
@@ -45,15 +56,41 @@ const LoanFormModal: React.FC<LoanFormModalProps> = ({
   const availableBooks = books.filter(book => book.isActive && (book.stock || 0) > 0);
   const activeMembers = members.filter(member => member.isActive);
 
+  const addBookToList = () => {
+    if (selectedBookId && !formData.bookIds?.includes(selectedBookId)) {
+      setFormData(prev => ({
+        ...prev,
+        bookIds: [...(prev.bookIds || []), selectedBookId]
+      }));
+      setSelectedBookId('');
+    }
+  };
+
+  const removeBookFromList = (bookIdToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      bookIds: prev.bookIds?.filter(id => id !== bookIdToRemove) || []
+    }));
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.bookId) {
-      newErrors.bookId = 'Pilih buku yang akan dipinjam';
+    if (!formData.bookIds || formData.bookIds.length === 0) {
+      newErrors.bookIds = 'Pilih minimal 1 buku';
     }
 
-    if (!formData.memberId) {
-      newErrors.memberId = 'Pilih anggota yang meminjam';
+    if (formData.isMemberLoan) {
+      if (!formData.memberId) {
+        newErrors.memberId = 'Pilih anggota yang meminjam';
+      }
+    } else {
+      if (!formData.nonMemberName?.trim()) {
+        newErrors.nonMemberName = 'Nama peminjam harus diisi';
+      }
+      if (!formData.nonMemberPhone?.trim()) {
+        newErrors.nonMemberPhone = 'Nomor telepon harus diisi';
+      }
     }
 
     if (!formData.borrowDate) {
@@ -74,14 +111,24 @@ const LoanFormModal: React.FC<LoanFormModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setLoading(true);
     try {
-      await onSubmit(formData);
+      const submitData = { ...formData };
+
+      if (formData.isMemberLoan) {
+        delete submitData.nonMemberName;
+        delete submitData.nonMemberPhone;
+        delete submitData.nonMemberClass;
+      } else {
+        delete submitData.memberId;
+      }
+
+      await onSubmit(submitData);
       onClose();
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -92,14 +139,13 @@ const LoanFormModal: React.FC<LoanFormModalProps> = ({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    
+    const { name, value, type } = e.target;
+
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -151,58 +197,187 @@ const LoanFormModal: React.FC<LoanFormModalProps> = ({
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="form-label">
-                Anggota *
-              </label>
-              <select
-                name="memberId"
-                value={formData.memberId || ''}
-                onChange={handleChange}
-                className={`form-input ${errors.memberId ? 'border-red-500' : ''}`}
-              >
-                <option value="">Pilih Anggota</option>
-                {activeMembers.map(member => (
-                  <option key={member.id} value={member.id}>
-                    {member.name} - {member.className}
-                  </option>
-                ))}
-              </select>
-              {errors.memberId && <p className="text-red-500 text-sm mt-1">{errors.memberId}</p>}
-              {selectedMember && (
-                <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
-                  <p><strong>Kelas:</strong> {selectedMember.className}</p>
-                  {selectedMember.phone && <p><strong>Telepon:</strong> {selectedMember.phone}</p>}
+            <div className="flex space-x-4 mb-4">
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="isMemberLoan"
+                  checked={formData.isMemberLoan === false}
+                  onChange={() => setFormData(prev => ({ ...prev, isMemberLoan: false }))}
+                  className="sr-only"
+                />
+                <div className={`px-4 py-2 rounded-lg border-2 ${!formData.isMemberLoan
+                  ? 'bg-green-100 border-green-500 text-green-700'
+                  : 'bg-gray-100 border-gray-300 text-gray-600'
+                  }`}>
+                  <FiUserPlus className="inline mr-2" />
+                  Non-Anggota
                 </div>
-              )}
+              </label>
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="isMemberLoan"
+                  checked={formData.isMemberLoan === true}
+                  onChange={() => setFormData(prev => ({ ...prev, isMemberLoan: true }))}
+                  className="sr-only"
+                />
+                <div className={`px-4 py-2 rounded-lg border-2 ${formData.isMemberLoan
+                  ? 'bg-blue-100 border-blue-500 text-blue-700'
+                  : 'bg-gray-100 border-gray-300 text-gray-600'
+                  }`}>
+                  <FiUser className="inline mr-2" />
+                  Anggota
+                </div>
+              </label>
             </div>
 
-            <div>
-              <label className="form-label">
-                Buku *
-              </label>
-              <select
-                name="bookId"
-                value={formData.bookId || ''}
-                onChange={handleChange}
-                className={`form-input ${errors.bookId ? 'border-red-500' : ''}`}
-              >
-                <option value="">Pilih Buku</option>
-                {availableBooks.map(book => (
-                  <option key={book.id} value={book.id}>
-                    {book.title} - {book.author} ({book.stock} tersedia)
-                  </option>
-                ))}
-              </select>
-              {errors.bookId && <p className="text-red-500 text-sm mt-1">{errors.bookId}</p>}
-              {selectedBook && (
-                <div className="mt-2 p-2 bg-green-50 rounded text-sm">
-                  <p><strong>Pengarang:</strong> {selectedBook.author}</p>
-                  <p><strong>Genre:</strong> {selectedBook.genre}</p>
-                  <p><strong>Stok:</strong> {selectedBook.stock} buku</p>
+            {formData.isMemberLoan && (
+              <div>
+                <label className="form-label">
+                  Anggota *
+                </label>
+                <select
+                  name="memberId"
+                  value={formData.memberId || ''}
+                  onChange={handleChange}
+                  className={`form-input ${errors.memberId ? 'border-red-500' : ''}`}
+                >
+                  <option value="">Pilih Anggota</option>
+                  {activeMembers.map(member => (
+                    <option key={member.id} value={member.id}>
+                      {member.name} - {member.className}
+                    </option>
+                  ))}
+                </select>
+                {errors.memberId && <p className="text-red-500 text-sm mt-1">{errors.memberId}</p>}
+                {selectedMember && (
+                  <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
+                    <p><strong>Kelas:</strong> {selectedMember.className}</p>
+                    {selectedMember.phone && <p><strong>Telepon:</strong> {selectedMember.phone}</p>}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!formData.isMemberLoan && (
+              <div className="space-y-3">
+                <div>
+                  <label className="form-label">
+                    Nama Peminjam *
+                  </label>
+                  <input
+                    type="text"
+                    name="nonMemberName"
+                    value={formData.nonMemberName || ''}
+                    onChange={handleChange}
+                    className={`form-input ${errors.nonMemberName ? 'border-red-500' : ''}`}
+                    placeholder="Nama lengkap peminjam"
+                  />
+                  {errors.nonMemberName && <p className="text-red-500 text-sm mt-1">{errors.nonMemberName}</p>}
                 </div>
-              )}
+
+                <div>
+                  <label className="form-label">
+                    Nomor Telepon *
+                  </label>
+                  <input
+                    type="tel"
+                    name="nonMemberPhone"
+                    value={formData.nonMemberPhone || ''}
+                    onChange={handleChange}
+                    className={`form-input ${errors.nonMemberPhone ? 'border-red-500' : ''}`}
+                    placeholder="08xxxxxxxxxx"
+                  />
+                  {errors.nonMemberPhone && <p className="text-red-500 text-sm mt-1">{errors.nonMemberPhone}</p>}
+                </div>
+
+                <div>
+                  <label className="form-label">
+                    Kelas
+                  </label>
+                  <input
+                    type="text"
+                    name="nonMemberClass"
+                    value={formData.nonMemberClass || ''}
+                    onChange={handleChange}
+                    className="form-input"
+                    placeholder="X RPL 1"
+                  />
+                </div>
+                {/* <div>
+                  <label className="form-label">
+                    Alamat (Opsional)
+                  </label>
+                  <textarea
+                    name="address"
+                    value={formData.address || ''}
+                    onChange={handleChange}
+                    rows={3}
+                    className="form-input"
+                    placeholder="Tambahkan catatan jika diperlukan..."
+                  />
+                </div> */}
+              </div>
+            )}
+
+            <div>
+              <p className='mb-1 form-label'>Pilih Judul Buku :</p>
+              <div className="flex gap-2 mb-3">
+                <select
+                  value={selectedBookId}
+                  onChange={(e) => setSelectedBookId(e.target.value)}
+                  className="flex-1 form-input"
+                >
+                  <option value="">Pilih Disini</option>
+                  {availableBooks.map(book => (
+                    <option key={book.id} value={book.id} disabled={formData.bookIds?.includes(book.id)}>
+                      {book.title} - {book.author} ({book.stock} tersedia)
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={addBookToList}
+                  disabled={!selectedBookId}
+                  className="btn-primary whitespace-nowrap px-4"
+                >
+                  <FiPlus className="h-4 w-4" />
+                  Tambah
+                </button>
+              </div>
             </div>
+
+            {errors.bookIds && <p className="text-red-500 text-sm mt-1">{errors.bookIds}</p>}
+
+            {formData.bookIds && formData.bookIds.length > 0 && (
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <h4 className="font-medium text-gray-700 mb-2">Buku yang dipilih:</h4>
+                <div className="space-y-2">
+                  {formData.bookIds.map(bookId => {
+                    const book = availableBooks.find(b => b.id === bookId);
+                    return (
+                      <div key={bookId} className="flex items-center justify-between bg-white p-2 rounded border">
+                        <div>
+                          <p className="font-medium">{book?.title}</p>
+                          <p className="text-sm text-gray-600">{book?.author}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeBookFromList(bookId)}
+                          className="text-red-500 hover:text-red-700 p-1"
+                        >
+                          <FiTrash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="text-sm text-gray-600 mt-2">
+                  Total: {formData.bookIds.length} buku
+                </p>
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -272,8 +447,8 @@ const LoanFormModal: React.FC<LoanFormModalProps> = ({
             </div>
           </form>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

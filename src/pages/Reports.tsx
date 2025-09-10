@@ -7,19 +7,20 @@ import { useLoans } from '../hooks/useLoans';
 import { FiAlertTriangle } from 'react-icons/fi';
 
 const Reports: React.FC = () => {
-  const { loansWithDetails, loading, error, fetchActiveLoans, fetchOverdueLoans, refreshLoans } = useLoans();
+  const { loansWithDetails, loading, error, refreshLoans } = useLoans();
   const [filter, setFilter] = useState<'all' | 'active' | 'overdue'>('all');
+  const activeLoans = loansWithDetails.filter(loan => loan.status === 'BORROWED');
+  const overdueLoans = activeLoans.filter(loan => new Date() > loan.dueDate);
 
   const handleFilterChange = (newFilter: 'all' | 'active' | 'overdue') => {
     setFilter(newFilter);
-    if (newFilter === 'active') {
-      fetchActiveLoans();
-    } else if (newFilter === 'overdue') {
-      fetchOverdueLoans();
-    } else {
-      refreshLoans();
-    }
+    refreshLoans();
   };
+
+  const filteredLoans =
+    filter === 'active' ? activeLoans :
+    filter === 'overdue' ? overdueLoans :
+    loansWithDetails;
 
   if (error) {
     return (
@@ -34,9 +35,6 @@ const Reports: React.FC = () => {
       </div>
     );
   }
-
-  const activeLoans = loansWithDetails.filter(loan => loan.status === 'BORROWED');
-  const overdueLoans = activeLoans.filter(loan => new Date() > loan.dueDate);
 
   return (
     <div className="p-4 lg:p-6 space-y-6">
@@ -147,7 +145,7 @@ const Reports: React.FC = () => {
 
         <div className="card-body">
           <LoanTable
-            loans={loansWithDetails}
+            loans={filteredLoans}
             showReturnAction={false}
             loading={loading}
           />

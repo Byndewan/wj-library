@@ -19,9 +19,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   const menuItems = [
     { path: '/', label: 'Dashboard', icon: FiHome, description: 'Overview sistem' },
+    { path: '/loans', label: 'Peminjaman', icon: FiRepeat, description: 'Transaksi peminjaman' },
     { path: '/books', label: 'Buku', icon: FiBook, description: 'Kelola koleksi buku' },
     { path: '/members', label: 'Anggota', icon: FiUsers, description: 'Data anggota perpustakaan' },
-    { path: '/loans', label: 'Peminjaman', icon: FiRepeat, description: 'Transaksi peminjaman' },
     { path: '/reports', label: 'Laporan', icon: FiBarChart2, description: 'Laporan dan statistik' },
   ];
 

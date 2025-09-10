@@ -38,7 +38,7 @@ const Loans: React.FC = () => {
   const isLoading = loading || booksLoading || membersLoading;
 
   return (
-    <div className="p-4 lg:p-6 space-y-6">
+    <div className="w-full max-w-full overflow-hidden px-4 lg:px-6 space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Manajemen Peminjaman</h1>
@@ -46,7 +46,7 @@ const Loans: React.FC = () => {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="btn-primary whitespace-nowrap"
+          className="btn-primary truncate max-w-full"
           disabled={isLoading}
         >
           <FiPlus className="h-4 w-4" />

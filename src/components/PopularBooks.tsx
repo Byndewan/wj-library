@@ -7,16 +7,16 @@ const PopularBooks: React.FC = () => {
   const { books } = useBooks();
   const { loansWithDetails } = useLoans();
 
-  // Calculate book popularity based on loan count
   const bookPopularity = books.map(book => {
-    const loanCount = loansWithDetails.filter(loan => loan.bookId === book.id).length;
+    const loanCount = loansWithDetails.filter(loan =>
+      loan.bookIds.includes(book.id)
+    ).length;
     return {
       ...book,
       loanCount
     };
   });
 
-  // Sort by loan count (descending) and take top 3
   const popularBooks = bookPopularity
     .filter(book => book.loanCount > 0)
     .sort((a, b) => b.loanCount - a.loanCount)

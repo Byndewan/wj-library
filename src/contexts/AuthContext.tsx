@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { 
-  type User, 
-  signInWithEmailAndPassword, 
-  signOut, 
+import {
+  type User,
+  signInWithEmailAndPassword,
+  signOut,
   onAuthStateChanged,
   getIdTokenResult
 } from 'firebase/auth';
@@ -31,22 +31,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [inactivityTimer, setInactivityTimer] = useState<number | null>(null);
 
   const resetInactivityTimer = () => {
-    if (inactivityTimer) {
-      clearTimeout(inactivityTimer);
-    }
+    const now = Date.now();
+    localStorage.setItem("lastActivity", now.toString());
+
+    if (inactivityTimer) clearTimeout(inactivityTimer);
+
     const timer = window.setTimeout(() => {
       if (currentUser) {
-        console.log('Session expired due to inactivity');
+        console.log("Session expired due to inactivity");
         logout();
       }
     }, 3600000);
+
     setInactivityTimer(timer);
-    return timer;
   };
 
   useEffect(() => {
     const events = ['mousedown', 'keypress', 'scroll', 'touchstart'];
-    
+
     const handleActivity = () => {
       resetInactivityTimer();
     };
@@ -65,19 +67,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
-      
+
       if (user) {
         try {
+          const lastActivity = localStorage.getItem("lastActivity");
+          if (lastActivity) {
+            const diff = Date.now() - parseInt(lastActivity, 10);
+            if (diff > 3600000) {
+              console.log("Session expired (browser closed too long)");
+              await logout();
+              return;
+            }
+          } else {
+            localStorage.setItem("lastActivity", Date.now().toString());
+          }
+
           const tokenResult = await getIdTokenResult(user);
           const tokenExpiration = new Date(tokenResult.expirationTime);
-          
+
           if (tokenExpiration < new Date()) {
+            console.log("Firebase token expired");
             await logout();
             return;
           }
 
           const userDoc = await getDoc(doc(db, 'users', user.uid));
-          
           if (userDoc.exists()) {
             const userData = userDoc.data() as AppUser;
             setUserData(userData);
@@ -93,7 +107,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
 
           resetInactivityTimer();
-          console.log(resetInactivityTimer());
         } catch (error) {
           console.error('Error fetching user data:', error);
           await logout();
@@ -101,16 +114,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         setUserData(null);
       }
-      
+
       setLoading(false);
     });
 
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "lastActivity") {
+        resetInactivityTimer();
+      }
+    };
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
   const determineUserRole = (email: string | null): UserRole => {
     if (!email) return 'SISWA';
-    
+
     if (email.includes('admin')) return 'ADMIN';
     if (email.includes('petugas')) return 'PETUGAS';
     return 'SISWA';
@@ -145,12 +169,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async (): Promise<void> => {
     try {
-      if (inactivityTimer) {
-        clearTimeout(inactivityTimer);
-      }
+      if (inactivityTimer) clearTimeout(inactivityTimer);
+      localStorage.removeItem("lastActivity");
       await signOut(auth);
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
       throw error;
     }
   };

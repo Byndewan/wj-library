@@ -166,7 +166,7 @@ const Register: React.FC = () => {
                     type="text"
                     required
                     className="form-input"
-                    placeholder="Contoh: XII IPA 1"
+                    placeholder="Contoh: X RPL 1"
                     value={formData.className}
                     onChange={handleChange}
                   />

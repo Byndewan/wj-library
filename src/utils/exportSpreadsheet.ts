@@ -20,8 +20,9 @@ export const exportSpreadsheet = (data: any[], filename: string): void => {
 export const exportLoansToExcel = (loans: LoanWithDetails[], filename: string = `laporan-peminjaman-${new Date().toISOString().split('T')[0]}.xlsx`): void => {
   const exportData = loans.map(loan => ({
     'ID Peminjaman': loan.id,
-    'Judul Buku': loan.bookTitle,
+    'Judul Buku': loan.bookTitles,
     'Nama Anggota': loan.memberName,
+    'Alamat': loan.address || '-',
     'Kelas': loan.className,
     'Tanggal Pinjam': loan.borrowDate.toLocaleDateString('id-ID'),
     'Tanggal Jatuh Tempo': loan.dueDate.toLocaleDateString('id-ID'),

@@ -84,34 +84,34 @@ const BookTable: React.FC<BookTableProps> = ({ books, onEdit, onCreate, onDelete
 
       <div className="card-body">
         <div className="overflow-x-auto">
-          <table className="table">
-            <thead>
+          <table className="w-full border-collapse font-sans">
+            <thead className="bg-gray-100 text-sm font-semibold text-gray-600 uppercase tracking-wider">
               <tr>
-                <th>Kode</th>
-                <th>Judul</th>
-                <th>Pengarang</th>
-                <th>Genre</th>
-                <th>Penerbit</th>
-                <th>Tahun</th>
-                <th>Stok</th>
-                <th>Status</th>
-                <th>Aksi</th>
+                <th className="px-4 py-3 text-left">Kode</th>
+                <th className="px-4 py-3 text-left">Judul</th>
+                <th className="px-4 py-3 text-left">Pengarang</th>
+                <th className="px-4 py-3 text-left">Genre</th>
+                <th className="px-4 py-3 text-left">Penerbit</th>
+                <th className="px-4 py-3 text-left">Tahun</th>
+                <th className="px-4 py-3 text-left">Stok</th>
+                <th className="px-4 py-3 text-left">Status</th>
+                <th className="px-4 py-3 text-left">Aksi</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-200 text-xs">
               {filteredBooks.map((book) => (
                 <tr key={book.id} className="hover:bg-blue-50 cursor-pointer">
-                  <td className="font-mono text-sm text-gray-600">{book.code}</td>
-                  <td className="font-medium text-gray-900">{book.title}</td>
-                  <td className="text-gray-700">{book.author}</td>
-                  <td>
+                  <td className="font-mono text-sm text-gray-600 px-4 py-3">{book.code}</td>
+                  <td className="font-medium text-gray-900 px-4 py-3">{book.title}</td>
+                  <td className="text-gray-700 px-4 py-3">{book.author}</td>
+                  <td className="px-4 py-3">
                     <span className="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                       {book.genre}
                     </span>
                   </td>
-                  <td className="text-gray-700">{book.publisher || '-'}</td>
-                  <td className="text-gray-700">{book.year || '-'}</td>
-                  <td>
+                  <td className="text-gray-700 px-4 py-3">{book.publisher || '-'}</td>
+                  <td className="text-gray-700 px-4 py-3">{book.year || '-'}</td>
+                  <td className="px-4 py-3">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
                       (book.stock || 0) > 0 
                         ? 'bg-green-100 text-green-800' 
@@ -120,7 +120,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, onEdit, onCreate, onDelete
                       {book.stock || 0}
                     </span>
                   </td>
-                  <td>
+                  <td className="px-4 py-3">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
                       book.isActive 
                         ? 'bg-green-100 text-green-800' 
@@ -129,7 +129,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, onEdit, onCreate, onDelete
                       {book.isActive ? 'Aktif' : 'Nonaktif'}
                     </span>
                   </td>
-                  <td>
+                  <td className="px-4 py-3">
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleEdit(book)}

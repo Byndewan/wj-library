@@ -94,7 +94,6 @@ const MemberFormModal: React.FC<MemberFormModalProps> = ({
       [name]: value
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -153,7 +152,7 @@ const MemberFormModal: React.FC<MemberFormModalProps> = ({
                 value={formData.className || ''}
                 onChange={handleChange}
                 className={`form-input ${errors.className ? 'border-red-500' : ''}`}
-                placeholder="Contoh: XII IPA 1"
+                placeholder="Contoh: X RPL 1"
               />
               {errors.className && <p className="text-red-500 text-sm mt-1">{errors.className}</p>}
             </div>

@@ -1,10 +1,10 @@
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs, 
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
   getDoc,
   query,
   where,
@@ -208,15 +208,19 @@ export const addLoan = async (loan: Omit<Loan, 'id'>): Promise<string> => {
       dueDate: Timestamp.fromDate(loan.dueDate),
       returnDate: loan.returnDate ? Timestamp.fromDate(loan.returnDate) : null,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      isMemberLoan: loan.isMemberLoan !== undefined ? loan.isMemberLoan : !!loan.memberId,
+      totalBooks: loan.bookIds.length
     };
 
     const docRef = await addDoc(loansCollection, loanData);
-    
-    if (loan.bookId) {
-      const book = await getBookById(loan.bookId);
-      if (book && book.stock !== undefined && book.stock > 0) {
-        await updateBook(loan.bookId, { stock: book.stock - 1 });
+
+    if (loan.bookIds && loan.bookIds.length > 0) {
+      for (const bookId of loan.bookIds) {
+        const book = await getBookById(bookId);
+        if (book && book.stock !== undefined && book.stock > 0) {
+          await updateBook(bookId, { stock: book.stock - 1 });
+        }
       }
     }
 
@@ -230,19 +234,21 @@ export const addLoan = async (loan: Omit<Loan, 'id'>): Promise<string> => {
 export const updateLoan = async (id: string, loan: Partial<Loan>): Promise<void> => {
   try {
     const updateData: any = { ...loan, updatedAt: new Date() };
-    
+
     if (loan.borrowDate) updateData.borrowDate = Timestamp.fromDate(loan.borrowDate);
     if (loan.dueDate) updateData.dueDate = Timestamp.fromDate(loan.dueDate);
     if (loan.returnDate) updateData.returnDate = Timestamp.fromDate(loan.returnDate);
-    
+
     await updateDoc(doc(db, 'loans', id), updateData);
 
     if (loan.status === 'RETURNED') {
       const existingLoan = await getLoanById(id);
-      if (existingLoan?.bookId) {
-        const book = await getBookById(existingLoan.bookId);
-        if (book && book.stock !== undefined) {
-          await updateBook(existingLoan.bookId, { stock: book.stock + 1 });
+      if (existingLoan?.bookIds) {
+        for (const bookId of existingLoan.bookIds) {
+          const book = await getBookById(bookId);
+          if (book && book.stock !== undefined) {
+            await updateBook(bookId, { stock: book.stock + 1 });
+          }
         }
       }
     }
@@ -264,7 +270,7 @@ export const deleteLoan = async (id: string): Promise<void> => {
 export const getActiveLoans = async (): Promise<Loan[]> => {
   try {
     const snapshot = await getDocs(query(
-      loansCollection, 
+      loansCollection,
       where('status', '==', 'BORROWED'),
       orderBy('dueDate')
     ));
@@ -288,7 +294,7 @@ export const getOverdueLoans = async (): Promise<Loan[]> => {
   try {
     const today = new Date();
     const snapshot = await getDocs(query(
-      loansCollection, 
+      loansCollection,
       where('status', '==', 'BORROWED'),
       where('dueDate', '<', Timestamp.fromDate(today))
     ));
@@ -311,7 +317,7 @@ export const getOverdueLoans = async (): Promise<Loan[]> => {
 export const getLoansByMemberId = async (memberId: string): Promise<Loan[]> => {
   try {
     const snapshot = await getDocs(query(
-      loansCollection, 
+      loansCollection,
       where('memberId', '==', memberId),
       orderBy('borrowDate', 'desc')
     ));
@@ -334,7 +340,7 @@ export const getLoansByMemberId = async (memberId: string): Promise<Loan[]> => {
 export const getLoansByBookId = async (bookId: string): Promise<Loan[]> => {
   try {
     const snapshot = await getDocs(query(
-      loansCollection, 
+      loansCollection,
       where('bookId', '==', bookId),
       orderBy('borrowDate', 'desc')
     ));

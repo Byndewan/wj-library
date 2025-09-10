@@ -87,31 +87,31 @@ const MemberTable: React.FC<MemberTableProps> = ({ members, onEdit, onCreate, on
 
       <div className="card-body">
         <div className="overflow-x-auto">
-          <table className="table">
-            <thead>
+          <table className="w-full border-collapse font-sans force-sm">
+            <thead className="bg-gray-100 text-xs font-semibold text-gray-600 uppercase tracking-wider">
               <tr>
-                <th>Nama</th>
-                <th>Kelas</th>
-                <th>Email</th>
-                <th>Telepon</th>
-                <th>Alamat</th>
-                <th>Status</th>
-                <th>Aksi</th>
+                <th className="px-4 py-3 text-left">Nama</th>
+                <th className="px-4 py-3 text-left">Kelas</th>
+                <th className="px-4 py-3 text-left">Email</th>
+                <th className="px-4 py-3 text-left">Telepon</th>
+                <th className="px-4 py-3 text-left">Alamat</th>
+                <th className="px-4 py-3 text-left">Status</th>
+                <th className="px-4 py-3 text-left">Aksi</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-200 text-xs">
               {filteredMembers.map((member) => (
                 <tr key={member.id} className="hover:bg-blue-50 cursor-pointer">
-                  <td className="font-medium text-gray-900">{member.name}</td>
-                  <td>
-                    <span className="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                  <td className="font-medium text-gray-900 px-4 py-3">{member.name}</td>
+                  <td className="px-1 py-3">
+                    <span className="p-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                       {member.className}
                     </span>
                   </td>
-                  <td className="text-gray-700">{member.email || '-'}</td>
-                  <td className="text-gray-700">{member.phone || '-'}</td>
-                  <td className="max-w-xs truncate text-gray-700">{member.address || '-'}</td>
-                  <td>
+                  <td className="text-gray-700 px-4 py-3">{member.email || '-'}</td>
+                  <td className="text-gray-700 px-4 py-3">{member.phone || '-'}</td>
+                  <td className="max-w-xs truncate text-gray-700 px-4 py-3">{member.address || '-'}</td>
+                  <td className="px-4 py-3">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
                       member.isActive 
                         ? 'bg-green-100 text-green-800' 
@@ -120,7 +120,7 @@ const MemberTable: React.FC<MemberTableProps> = ({ members, onEdit, onCreate, on
                       {member.isActive ? 'Aktif' : 'Nonaktif'}
                     </span>
                   </td>
-                  <td>
+                  <td className="px-4 py-3">
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleEdit(member)}

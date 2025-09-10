@@ -49,7 +49,7 @@ function AppContent() {
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex-1 lg:ml-64">
         <Navbar onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
-        <main className="p-4 lg:p-6 pt-16 lg:pt-20 min-h-screen">
+        <main className="p-4 lg:p-6 pt-16 lg:pt-20 min-h-screen max-w-screen mx-auto w-full">
           <Routes>
             <Route path="/" element={
               <ProtectedRoute>

@@ -58,36 +58,78 @@ export const useLoans = () => {
       setLoading(true);
       setError(null);
 
-      const book = books.find(b => b.id === loanData.bookId);
-      if (!book || !book.isActive || (book.stock || 0) <= 0) {
+      if (!loanData.bookIds || loanData.bookIds.length === 0) {
         return {
           success: false,
-          error: 'Buku tidak tersedia untuk dipinjam'
+          error: 'Pilih minimal 1 buku'
         };
       }
 
-      const member = members.find(m => m.id === loanData.memberId);
-      if (!member || !member.isActive) {
+      for (const bookId of loanData.bookIds) {
+        const book = books.find(b => b.id === bookId);
+        if (!book || !book.isActive || (book.stock || 0) <= 0) {
+          return {
+            success: false,
+            error: `Buku "${book?.title || bookId}" tidak tersedia`
+          };
+        }
+      }
+
+      if (loanData.memberId) {
+        const member = members.find(m => m.id === loanData.memberId);
+        if (!member || !member.isActive) {
+          return {
+            success: false,
+            error: 'Anggota tidak aktif'
+          };
+        }
+      }
+      else if (loanData.nonMemberName) {
+        if (!loanData.nonMemberName.trim()) {
+          return {
+            success: false,
+            error: 'Nama peminjam non-anggota harus diisi'
+          };
+        }
+        if (!loanData.nonMemberPhone?.trim()) {
+          return {
+            success: false,
+            error: 'Nomor telepon peminjam non-anggota harus diisi'
+          };
+        }
+      } else {
         return {
           success: false,
-          error: 'Anggota tidak aktif'
+          error: 'Harap pilih anggota atau isi data non-anggota'
         };
       }
 
-      const loanId = await addLoan({
-        ...loanData,
-        status: 'BORROWED'
-      });
+      const loanToCreate: any = {
+      ...loanData,
+        status: 'BORROWED',
+        isMemberLoan: !!loanData.memberId,
+        totalBooks: loanData.bookIds.length
+      };
+
+      if (loanData.memberId) {
+        delete loanToCreate.nonMemberName;
+        delete loanToCreate.nonMemberPhone;
+        delete loanToCreate.nonMemberClass;
+      } else {
+        delete loanToCreate.memberId;
+      }
+
+      const loanId = await addLoan(loanToCreate);
       
       await fetchLoans();
       
       return {
         success: true,
         data: loanId,
-        message: 'Peminjaman berhasil dibuat'
+        message: loanData.memberId ? 'Peminjaman berhasil dibuat' : 'Peminjaman non-anggota berhasil dibuat'
       };
-    } catch (err) {
-      const errorMsg = 'Gagal membuat peminjaman';
+    } catch (err: any) {
+      const errorMsg = err.message || 'Gagal membuat peminjaman';
       setError(errorMsg);
       console.error('Error creating loan:', err);
       return {
@@ -115,8 +157,8 @@ export const useLoans = () => {
         success: true,
         message: 'Buku berhasil dikembalikan'
       };
-    } catch (err) {
-      const errorMsg = 'Gagal mengembalikan buku';
+    } catch (err: any) {
+      const errorMsg = err.message || 'Gagal mengembalikan buku';
       setError(errorMsg);
       console.error('Error returning loan:', err);
       return {
@@ -140,8 +182,8 @@ export const useLoans = () => {
         success: true,
         message: 'Peminjaman berhasil dihapus'
       };
-    } catch (err) {
-      const errorMsg = 'Gagal menghapus peminjaman';
+    } catch (err: any) {
+      const errorMsg = err.message || 'Gagal menghapus peminjaman';
       setError(errorMsg);
       console.error('Error deleting loan:', err);
       return {
@@ -197,18 +239,63 @@ export const useLoans = () => {
     }
   }, []);
 
+  const getNonMemberLoans = useCallback(async (): Promise<Loan[]> => {
+    try {
+      const allLoans = await getLoans();
+      return allLoans.filter(loan => !loan.memberId && loan.nonMemberName);
+    } catch (err) {
+      console.error('Error getting non-member loans:', err);
+      return [];
+    }
+  }, []);
+
+  const searchNonMemberLoans = useCallback(async (searchTerm: string): Promise<Loan[]> => {
+    try {
+      const nonMemberLoans = await getNonMemberLoans();
+      return nonMemberLoans.filter(loan =>
+        loan.nonMemberName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        loan.nonMemberPhone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        loan.nonMemberClass?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    } catch (err) {
+      console.error('Error searching non-member loans:', err);
+      return [];
+    }
+  }, []);
+
   useEffect(() => {
     if (loans.length > 0 && books.length > 0 && members.length > 0) {
       const enrichedLoans: LoanWithDetails[] = loans.map(loan => {
         const book = books.find(b => b.id === loan.bookId);
-        const member = members.find(m => m.id === loan.memberId);
         
-        return {
-          ...loan,
-          bookTitle: book?.title || 'Buku Tidak Ditemukan',
-          memberName: member?.name || 'Anggota Tidak Ditemukan',
-          className: member?.className || '-'
-        };
+        if (loan.memberId) {
+          const member = members.find(m => m.id === loan.memberId);
+          return {
+            ...loan,
+            bookTitle: book?.title || 'Buku Tidak Ditemukan',
+            memberName: member?.name || 'Anggota Tidak Ditemukan',
+            className: member?.className || '-',
+            nonMemberInfo: undefined
+          };
+        } 
+        else if (loan.nonMemberName) {
+          return {
+            ...loan,
+            bookTitle: book?.title || 'Buku Tidak Ditemukan',
+            memberName: `${loan.nonMemberName} (Non-Anggota)`,
+            className: 'Non-Anggota',
+            nonMemberInfo: `${loan.nonMemberName} - ${loan.nonMemberPhone || 'No Phone'}${loan.nonMemberClass ? ` - ${loan.nonMemberClass}` : ''}`
+          };
+        }
+        else {
+          return {
+            ...loan,
+            bookTitle: book?.title || 'Buku Tidak Ditemukan',
+            memberName: 'Peminjam Tidak Diketahui',
+            className: '-',
+            nonMemberInfo: undefined
+          };
+        }
       });
       
       setLoansWithDetails(enrichedLoans);
@@ -233,6 +320,8 @@ export const useLoans = () => {
     fetchOverdueLoans,
     getMemberLoans,
     getBookLoans,
+    getNonMemberLoans,
+    searchNonMemberLoans,
     refreshLoans: fetchLoans
   };
 };

@@ -1,3 +1,6 @@
+export type UserRole = 'ADMIN' | 'PETUGAS' | 'SISWA';
+export type LoanStatus = 'BORROWED' | 'RETURNED';
+
 export interface Book {
   id: string;
   code: string;
@@ -25,8 +28,6 @@ export interface Member {
   updatedAt?: Date;
 }
 
-export type UserRole = 'ADMIN' | 'PETUGAS' | 'SISWA';
-
 export interface AppUser {
   id: string;
   name: string;
@@ -41,12 +42,14 @@ export interface AppUser {
   updatedAt?: Date;
 }
 
-export type LoanStatus = 'BORROWED' | 'RETURNED';
-
 export interface Loan {
   id: string;
-  bookId: string;
-  memberId: string;
+  bookIds: string[];
+  memberId?: string;
+  nonMemberName?: string;
+  nonMemberPhone?: string;
+  nonMemberClass?: string;
+  address?: string;
   staffId?: string;
   borrowDate: Date;
   dueDate: Date;
@@ -55,12 +58,15 @@ export interface Loan {
   notes?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  isMemberLoan: boolean;
+  totalBooks: number;
 }
 
 export interface LoanWithDetails extends Loan {
-  bookTitle: string;
-  memberName: string;
-  className: string;
+  bookTitles: string[];
+  memberName?: string;
+  className?: string;
+  nonMemberInfo?: string;
 }
 
 export interface BookWithAvailability extends Book {
@@ -122,11 +128,16 @@ export interface MemberFormData {
 }
 
 export interface LoanFormData {
-  bookId: string;
-  memberId: string;
+  bookIds: string[];
+  memberId?: string;
+  nonMemberName?: string;
+  nonMemberPhone?: string;
+  nonMemberClass?: string;
+  address?: string;
   borrowDate: Date;
   dueDate: Date;
   notes?: string;
+  isMemberLoan?: boolean;
 }
 
 export interface UserFormData {
@@ -167,7 +178,7 @@ export interface Notification {
 }
 
 export interface LibrarySettings {
-  loanDuration: number; // in days
+  loanDuration: number;
   maxLoansPerMember: number;
   overdueFinePerDay: number;
   libraryName: string;
