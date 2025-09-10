@@ -56,7 +56,7 @@ const PopularBooks: React.FC = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-semibold text-blue-600">{book.loanCount}</p>
+                  <p className="text-sm font-semibold text-red-600">{book.loanCount}</p>
                   <p className="text-xs text-gray-500">peminjaman</p>
                 </div>
               </div>

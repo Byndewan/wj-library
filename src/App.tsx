@@ -79,6 +79,12 @@ function AppContent() {
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
+        <footer class="text-center text-sm text-gray-500 py-4">
+          © 2025 WJLRC Library. Supported by
+          <a href="https://instagram.com/byndewan_" target="_blank" class="text-blue-600 hover:underline ml-1">
+            @Abyan
+          </a>. All rights reserved.
+        </footer>
       </div>
     </div>
   );

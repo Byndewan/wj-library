@@ -32,7 +32,7 @@ const Dashboard: React.FC = () => {
   if (booksLoading || membersLoading || loansLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
       </div>
     );
   }
@@ -42,7 +42,7 @@ const Dashboard: React.FC = () => {
       title: 'Total Buku',
       value: books.length,
       icon: FiBook,
-      color: 'blue',
+      color: 'red',
       description: `${activeBooks.length} aktif`
     },
     {
@@ -74,11 +74,11 @@ const Dashboard: React.FC = () => {
       description: 'Tambah, edit, atau hapus buku',
       icon: FiBookOpen,
       path: '/books',
-      color: 'blue'
+      color: 'red'
     },
     {
       title: 'Kelola Anggota',
-      description: 'Kelola data anggota perpustakaan',
+      description: 'Kelola data anggota WJLRC',
       icon: FiUser,
       path: '/members',
       color: 'green'
@@ -104,10 +104,10 @@ const Dashboard: React.FC = () => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-1">Selamat datang di Sistem Manajemen Perpustakaan</p>
+          <p className="text-gray-600 mt-1">Selamat datang di <strong>WJLRC Library</strong> Platform Perpustakaan Digital</p>
         </div>
         <div className="mt-4 lg:mt-0">
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-500 font-medium">
             Terakhir diperbarui: {new Date().toLocaleDateString('id-ID')}
           </span>
         </div>
@@ -206,7 +206,7 @@ const Dashboard: React.FC = () => {
       {/* System Status */}
       <div className="card">
         <div className="card-header">
-          <h2 className="text-lg font-semibold text-gray-900">Status Sistem</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Status Website</h2>
         </div>
         <div className="card-body">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -217,9 +217,9 @@ const Dashboard: React.FC = () => {
               <h3 className="font-medium mt-2 text-gray-400">Aplikasi</h3>
               <p className="text-sm text-gray-600">Berjalan normal</p>
             </div>
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="text-center p-4 bg-red-50 rounded-lg">
               <div className="flex justify-center">
-                <FiDatabase className="h-6 w-6 text-blue-600" />
+                <FiDatabase className="h-6 w-6 text-red-600" />
               </div>
               <h3 className="font-medium mt-2 text-gray-400">Database</h3>
               <p className="text-sm text-gray-600">Tersinkronisasi</p>

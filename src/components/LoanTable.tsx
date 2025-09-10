@@ -67,7 +67,7 @@ const LoanTable: React.FC<LoanTableProps> = ({
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
       </div>
     );
   }
@@ -100,7 +100,7 @@ const LoanTable: React.FC<LoanTableProps> = ({
                   <tr
                     key={loan.id}
                     className={`
-                      hover:bg-blue-50 cursor-pointer
+                      hover:bg-red-50 cursor-pointer
                       ${isOverdue ? 'bg-red-50' : ''}
                       ${isDueSoon ? 'bg-yellow-50' : ''}
                       ${!loan.memberId ? 'bg-purple-50' : ''}
@@ -119,7 +119,7 @@ const LoanTable: React.FC<LoanTableProps> = ({
                             +{loan.bookTitles.length - 2} buku lainnya...
                           </div>
                         )}
-                        <div className="text-xs text-blue-600 mt-1">
+                        <div className="text-xs text-red-600 mt-1">
                           Total: {loan.bookIds.length} buku
                         </div>
                       </div>
@@ -148,7 +148,7 @@ const LoanTable: React.FC<LoanTableProps> = ({
                             ? 'bg-red-100 text-red-800'
                             : isDueSoon
                               ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-blue-100 text-blue-800'
+                              : 'bg-red-100 text-red-800'
                           : 'bg-green-100 text-green-800'
                         }`}>
                         {loan.status === 'BORROWED' ? 'Dipinjam' : 'Dikembalikan'}

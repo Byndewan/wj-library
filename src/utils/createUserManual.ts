@@ -60,7 +60,7 @@ export const createUserManual = async (
         errorMessage = 'Format email tidak valid.';
         break;
       case 'auth/operation-not-allowed':
-        errorMessage = 'Operasi tidak diizinkan. Hubungi administrator.';
+        errorMessage = 'Operasi tidak diizinkan. Hubungi Admin WJLRC.';
         break;
       default:
         errorMessage = error.message || 'Terjadi kesalahan tidak diketahui';
@@ -109,7 +109,7 @@ export const validateEmail = (email: string): boolean => {
 export const getRoleDisplayName = (role: UserRole): string => {
   switch (role) {
     case 'ADMIN':
-      return 'Administrator';
+      return 'Admin WJLRC';
     case 'PETUGAS':
       return 'Petugas Perpustakaan';
     case 'SISWA':

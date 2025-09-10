@@ -42,7 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
       case 'ADMIN':
         return 'bg-red-100 text-red-800';
       case 'PETUGAS':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-red-100 text-red-800';
       case 'SISWA':
         return 'bg-green-100 text-green-800';
       default:
@@ -73,14 +73,13 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
         {/* Mobile menu button */}
         <button
           onClick={onToggleSidebar}
-          className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500"
           aria-label="Toggle menu"
         >
           {isMenuOpen ? <FiX className="h-5 w-5" /> : <FiMenu className="h-5 w-5" />}
         </button>
 
-        <div className="hidden lg:flex flex-col">
-          {/* <h1 className="text-lg font-semibold text-gray-900">Sistem Manajemen Perpustakaan</h1> */}
+        <div className="hidden lg:flex flex-col font-semibold">
           <div className="flex items-center text-md text-gray-600 mt-0.5">
             <FiCalendar className="mr-1.5 h-3.5 w-3.5" />
             <span className="mr-3">{formatDate(currentTime)}</span>
@@ -95,12 +94,12 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
             <div className="text-right hidden md:block">
               <p className="text-sm font-medium text-gray-800">{userData?.name}</p>
               <span className={`text-xs px-2 py-1 rounded-full ${getRoleBadgeColor(userData?.role || '')}`}>
-                {userData?.role === 'ADMIN' ? 'Administrator' : 
+                {userData?.role === 'ADMIN' ? 'Admin WJLRC' : 
                  userData?.role === 'PETUGAS' ? 'Petugas' : 'Siswa'}
               </span>
             </div>
             <div className="relative">
-              <div className="w-9 h-9 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm">
+              <div className="w-9 h-9 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm">
                 {userData?.name?.charAt(0).toUpperCase()}
               </div>
             </div>

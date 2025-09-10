@@ -55,8 +55,8 @@ const Loans: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <h3 className="text-lg font-semibold text-blue-800">Total Peminjaman</h3>
+        <div className="bg-red-50 p-4 rounded-lg">
+          <h3 className="text-lg font-semibold text-red-800">Total Peminjaman</h3>
           <p className="text-2xl font-bold text-gray-600">{loansWithDetails.length}</p>
         </div>
         <div className="bg-yellow-50 p-4 rounded-lg">

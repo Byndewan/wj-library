@@ -52,15 +52,15 @@ const Reports: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-blue-50 p-4 rounded-lg">
+        <div className="bg-red-50 p-4 rounded-lg">
           <div className="flex items-center">
-            <div className="bg-blue-100 p-2 rounded-lg mr-3">
-              <FiAlertTriangle className="text-blue-600 h-5 w-5" />
+            <div className="bg-red-100 p-2 rounded-lg mr-3">
+              <FiAlertTriangle className="text-red-600 h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-blue-800">Total</h3>
+              <h3 className="text-sm font-semibold text-red-800">Total</h3>
               <p className="text-2xl font-bold text-gray-600">{loansWithDetails.length}</p>
-              <p className="text-xs text-blue-600">Semua Peminjaman</p>
+              <p className="text-xs text-red-600">Semua Peminjaman</p>
             </div>
           </div>
         </div>
@@ -115,7 +115,7 @@ const Reports: React.FC = () => {
               <button
                 onClick={() => handleFilterChange('all')}
                 className={`px-4 py-2 rounded-lg transition duration-200 ${filter === 'all'
-                    ? 'bg-blue-500 text-white'
+                    ? 'bg-red-500 text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }`}
               >
@@ -124,7 +124,7 @@ const Reports: React.FC = () => {
               <button
                 onClick={() => handleFilterChange('active')}
                 className={`px-4 py-2 rounded-lg transition duration-200 ${filter === 'active'
-                    ? 'bg-blue-500 text-white'
+                    ? 'bg-red-500 text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }`}
               >
@@ -133,7 +133,7 @@ const Reports: React.FC = () => {
               <button
                 onClick={() => handleFilterChange('overdue')}
                 className={`px-4 py-2 rounded-lg transition duration-200 ${filter === 'overdue'
-                    ? 'bg-blue-500 text-white'
+                    ? 'bg-red-500 text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }`}
               >

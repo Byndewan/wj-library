@@ -47,7 +47,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, onEdit, onCreate, onDelete
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
       </div>
     );
   }
@@ -100,12 +100,12 @@ const BookTable: React.FC<BookTableProps> = ({ books, onEdit, onCreate, onDelete
             </thead>
             <tbody className="divide-y divide-gray-200 text-xs">
               {filteredBooks.map((book) => (
-                <tr key={book.id} className="hover:bg-blue-50 cursor-pointer">
+                <tr key={book.id} className="hover:bg-red-50 cursor-pointer">
                   <td className="font-mono text-sm text-gray-600 px-4 py-3">{book.code}</td>
                   <td className="font-medium text-gray-900 px-4 py-3">{book.title}</td>
                   <td className="text-gray-700 px-4 py-3">{book.author}</td>
                   <td className="px-4 py-3">
-                    <span className="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                    <span className="px-2.5 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">
                       {book.genre}
                     </span>
                   </td>
@@ -133,7 +133,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, onEdit, onCreate, onDelete
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleEdit(book)}
-                        className="text-blue-600 hover:text-blue-800 transition duration-200 p-1.5 rounded-md hover:bg-blue-50"
+                        className="text-red-600 hover:text-red-800 transition duration-200 p-1.5 rounded-md hover:bg-red-50"
                         title="Edit buku"
                       >
                         <FiEdit className="h-4 w-4" />

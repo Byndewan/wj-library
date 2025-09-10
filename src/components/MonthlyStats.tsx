@@ -35,9 +35,9 @@ const MonthlyStats: React.FC = () => {
       </div>
       <div className="card-body">
         <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-2xl font-bold text-blue-600">{monthlyLoans.length}</p>
-            <p className="text-sm text-blue-600">Total Peminjaman</p>
+          <div className="bg-red-50 p-3 rounded-lg">
+            <p className="text-2xl font-bold text-red-600">{monthlyLoans.length}</p>
+            <p className="text-sm text-red-600">Total Peminjaman</p>
           </div>
           <div className="bg-green-50 p-3 rounded-lg">
             <p className="text-2xl font-bold text-green-600">{returnedLoans.length}</p>

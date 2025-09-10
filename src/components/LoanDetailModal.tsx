@@ -22,7 +22,7 @@ const LoanDetailModal: React.FC<LoanDetailModalProps> = ({ isOpen, onClose, loan
     if (loan.status === 'RETURNED') return 'text-green-600 bg-green-100';
     if (isOverdue) return 'text-red-600 bg-red-100';
     if (isDueSoon) return 'text-yellow-600 bg-yellow-100';
-    return 'text-blue-600 bg-blue-100';
+    return 'text-red-600 bg-red-100';
   };
 
   const getStatusText = () => {
@@ -48,25 +48,25 @@ const LoanDetailModal: React.FC<LoanDetailModalProps> = ({ isOpen, onClose, loan
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             {/* Informasi Buku */}
-            <div className="bg-blue-50 p-1 rounded-lg">
+            <div className="bg-red-50 p-1 rounded-lg">
               <div className="space-y-2">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-medium text-blue-800 mb-3 flex items-center">
+                <div className="bg-red-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-medium text-red-800 mb-3 flex items-center">
                     <FiBook className="mr-2 h-5 w-5" />
                     Informasi Buku ({loan.bookIds.length} buku)
                   </h3>
                   <div className="space-y-2">
                     {loan.bookTitles.map((title, index) => (
                       <div key={index}>
-                        <span className="font-semibold text-blue-700">Buku {index + 1}:</span>
-                        <p className="text-blue-900">{title}</p>
+                        <span className="font-semibold text-red-700">Buku {index + 1}:</span>
+                        <p className="text-red-900">{title}</p>
                       </div>
                     ))}
                   </div>
                 </div>
                 <div className='p-4'>
-                  <span className="font-semibold text-blue-700">ID Buku:</span>
-                  <p className="text-blue-900 font-mono text-sm truncate max-w-[200px]">
+                  <span className="font-semibold text-red-700">ID Buku:</span>
+                  <p className="text-red-900 font-mono text-sm truncate max-w-[200px]">
                     {loan.bookIds}
                   </p>
                 </div>

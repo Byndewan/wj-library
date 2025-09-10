@@ -39,7 +39,7 @@ const Members: React.FC = () => {
     <div className="p-4 lg:p-6 space-y-6">
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Manajemen Anggota</h1>
-        <p className="text-gray-600">Kelola data anggota perpustakaan</p>
+        <p className="text-gray-600">Kelola data anggota WJLRC</p>
       </div>
 
       <MemberTable

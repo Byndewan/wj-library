@@ -18,10 +18,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
 
   const menuItems = [
-    { path: '/', label: 'Dashboard', icon: FiHome, description: 'Overview sistem' },
-    { path: '/loans', label: 'Peminjaman', icon: FiRepeat, description: 'Transaksi peminjaman' },
+    { path: '/', label: 'Dashboard', icon: FiHome, description: 'Overview website' },
+    { path: '/loans', label: 'Peminjaman', icon: FiRepeat, description: 'Peminjaman & pengembalian' },
     { path: '/books', label: 'Buku', icon: FiBook, description: 'Kelola koleksi buku' },
-    { path: '/members', label: 'Anggota', icon: FiUsers, description: 'Data anggota perpustakaan' },
+    { path: '/members', label: 'Anggota', icon: FiUsers, description: 'data anggota WJLRC' },
     { path: '/reports', label: 'Laporan', icon: FiBarChart2, description: 'Laporan dan statistik' },
   ];
 
@@ -31,11 +31,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       <div className="hidden lg:flex lg:flex-col w-64 bg-white text-gray-800 h-screen fixed left-0 top-0 pt-16 z-30 border-r border-gray-200">
         <div className="p-4">
           <div className="text-center mb-8 mt-4">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <FiBook className="text-blue-600 h-7 w-7" />
+            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <img src="/WJ.png" alt="LOGO" />
             </div>
-            <h2 className="text-lg font-semibold text-gray-900">Perpustakaan</h2>
-            <p className="text-gray-500 text-sm">Sistem Manajemen</p>
+            <h2 className="text-lg font-semibold text-gray-900">WJLRC Library</h2>
+            <p className="text-gray-500 text-sm">Platform Perpustakaan Digital</p>
           </div>
 
           <ul className="space-y-1">
@@ -47,11 +47,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     to={item.path}
                     className={`flex items-center p-3 rounded-xl transition-all duration-200 group ${
                       location.pathname === item.path
-                        ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600'
+                        ? 'bg-red-50 text-red-700 border-r-2 border-red-600'
                         : 'hover:bg-gray-50 text-gray-600 hover:text-gray-900'
                     }`}
                   >
-                    <IconComponent className={`text-lg mr-3 ${location.pathname === item.path ? 'text-blue-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
+                    <IconComponent className={`text-lg mr-3 ${location.pathname === item.path ? 'text-red-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
                     <div className="flex-1">
                       <span className="font-medium text-sm">{item.label}</span>
                       <p className="text-xs text-gray-500 group-hover:text-gray-600 mt-0.5">
@@ -68,8 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {/* Footer */}
         <div className="mt-auto p-4 border-t border-gray-200">
           <div className="text-center text-gray-500 text-xs">
-            <p>© 2024 Perpustakaan Digital</p>
-            <p>v1.0.0</p>
+            <p>© 2025 WJLRC Library. Supported by <a href="https://instagram.com/byndewan_" target="_blank" class="text-blue-600 hover:underline ml-1">@Abyan</a>. All rights reserved.</p>
           </div>
         </div>
       </div>
@@ -86,11 +85,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </button>
           
           <div className="text-center mb-8 mt-2">
-            <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <FiBook className="text-blue-600 h-6 w-6" />
+            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <img src="/WJ.png" alt="LOGO" />
             </div>
-            <h2 className="text-lg font-semibold text-gray-900">Perpustakaan</h2>
-            <p className="text-gray-500 text-sm">Sistem Manajemen</p>
+            <h2 className="text-lg font-semibold text-gray-900">WJLRC Library</h2>
+            <p className="text-gray-500 text-sm">Platform Perpustakaan Digital</p>
           </div>
 
           <ul className="space-y-1">
@@ -103,11 +102,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     onClick={onClose}
                     className={`flex items-center p-3 rounded-xl transition-all duration-200 group ${
                       location.pathname === item.path
-                        ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600'
+                        ? 'bg-red-50 text-red-700 border-r-2 border-red-600'
                         : 'hover:bg-gray-50 text-gray-600 hover:text-gray-900'
                     }`}
                   >
-                    <IconComponent className={`text-lg mr-3 ${location.pathname === item.path ? 'text-blue-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
+                    <IconComponent className={`text-lg mr-3 ${location.pathname === item.path ? 'text-red-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
                     <div className="flex-1">
                       <span className="font-medium text-sm">{item.label}</span>
                       <p className="text-xs text-gray-500 group-hover:text-gray-600 mt-0.5">

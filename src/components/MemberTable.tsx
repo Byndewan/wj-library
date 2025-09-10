@@ -50,7 +50,7 @@ const MemberTable: React.FC<MemberTableProps> = ({ members, onEdit, onCreate, on
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
       </div>
     );
   }
@@ -61,7 +61,7 @@ const MemberTable: React.FC<MemberTableProps> = ({ members, onEdit, onCreate, on
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold text-gray-900">Manajemen Anggota</h2>
-            <p className="text-sm text-gray-600">Kelola data anggota perpustakaan</p>
+            <p className="text-sm text-gray-600">Kelola data anggota WJLRC</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
@@ -101,10 +101,10 @@ const MemberTable: React.FC<MemberTableProps> = ({ members, onEdit, onCreate, on
             </thead>
             <tbody className="divide-y divide-gray-200 text-xs">
               {filteredMembers.map((member) => (
-                <tr key={member.id} className="hover:bg-blue-50 cursor-pointer">
+                <tr key={member.id} className="hover:bg-red-50 cursor-pointer">
                   <td className="font-medium text-gray-900 px-4 py-3">{member.name}</td>
                   <td className="px-1 py-3">
-                    <span className="p-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                    <span className="p-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">
                       {member.className}
                     </span>
                   </td>
@@ -124,7 +124,7 @@ const MemberTable: React.FC<MemberTableProps> = ({ members, onEdit, onCreate, on
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleEdit(member)}
-                        className="text-blue-600 hover:text-blue-800 transition duration-200 p-1.5 rounded-md hover:bg-blue-50"
+                        className="text-red-600 hover:text-red-800 transition duration-200 p-1.5 rounded-md hover:bg-red-50"
                         title="Edit anggota"
                       >
                         <FiEdit className="h-4 w-4" />

@@ -77,14 +77,14 @@ const Register: React.FC = () => {
       <div className="max-w-md w-full space-y-8">
         <div className="bg-white rounded-xl shadow-sm p-8 animate-fadeIn border border-gray-200">
           <div className="text-center">
-            <div className="mx-auto h-16 w-16 bg-blue-600 rounded-full flex items-center justify-center shadow-md">
-              <FiBook className="text-white text-2xl" />
+            <div className="w-30 h-30 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <img src="/WJ.png" alt="LOGO" />
             </div>
             <h2 className="mt-6 text-2xl font-bold text-gray-900">
               Daftar Akun
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              Buat akun baru untuk mengakses sistem perpustakaan
+              Buat akun baru untuk mengakses WJLRC Library
             </p>
           </div>
 
@@ -151,7 +151,7 @@ const Register: React.FC = () => {
                 >
                   <option value="SISWA">Siswa</option>
                   <option value="PETUGAS">Petugas Perpustakaan</option>
-                  <option value="ADMIN">Administrator</option>
+                  <option value="ADMIN">Admin WJLRC</option>
                 </select>
               </div>
 
@@ -246,7 +246,7 @@ const Register: React.FC = () => {
             <div className="text-center pt-4 border-t border-gray-200">
               <p className="text-sm text-gray-600">
                 Sudah punya akun?{' '}
-                <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+                <Link to="/login" className="font-medium text-red-600 hover:text-red-500">
                   Masuk di sini
                 </Link>
               </p>
@@ -256,7 +256,7 @@ const Register: React.FC = () => {
 
         <div className="text-center">
           <p className="text-xs text-gray-500">
-            © 2024 Sistem Manajemen Perpustakaan. All rights reserved.
+            © 2025 WJLRC Library. Supported by <a href="https://instagram.com/username_ig_kamu" target="_blank" class="text-blue-600 hover:underline ml-1">@Abyan</a>. All rights reserved.
           </p>
         </div>
       </div>

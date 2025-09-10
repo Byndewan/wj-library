@@ -223,7 +223,7 @@ const LoanFormModal: React.FC<LoanFormModalProps> = ({
                   className="sr-only"
                 />
                 <div className={`px-4 py-2 rounded-lg border-2 ${formData.isMemberLoan
-                  ? 'bg-blue-100 border-blue-500 text-blue-700'
+                  ? 'bg-red-100 border-red-500 text-red-700'
                   : 'bg-gray-100 border-gray-300 text-gray-600'
                   }`}>
                   <FiUser className="inline mr-2" />
@@ -252,7 +252,7 @@ const LoanFormModal: React.FC<LoanFormModalProps> = ({
                 </select>
                 {errors.memberId && <p className="text-red-500 text-sm mt-1">{errors.memberId}</p>}
                 {selectedMember && (
-                  <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
+                  <div className="mt-2 p-2 bg-red-50 rounded text-sm">
                     <p><strong>Kelas:</strong> {selectedMember.className}</p>
                     {selectedMember.phone && <p><strong>Telepon:</strong> {selectedMember.phone}</p>}
                   </div>
